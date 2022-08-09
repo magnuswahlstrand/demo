@@ -59,7 +59,7 @@ export function Header2() {
     });
 
     const selectedPokemon = pokemon[form.values.pokemon];
-    const types = selectedPokemon.types.map(t => (<Badge mt="md" color={typeColors[t]}>{t}</Badge>))
+    const types = selectedPokemon.types.map(t => (<Badge key={t} mt="md" color={typeColors[t]}>{t}</Badge>))
 
     return (
         <>
