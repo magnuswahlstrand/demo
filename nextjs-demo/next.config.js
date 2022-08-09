@@ -11,6 +11,7 @@ const withMDX = nextMDX({
 const nextConfig = {
     reactStrictMode: true,
     swcMinify: true,
+    basePath: '/demo/out',
 }
 
 module.exports = withMDX({
