@@ -1,0 +1,67 @@
+---
+import { Icon } from 'astro-icon'
+import { Result } from './Result.astro'
+const posts = await Astro.glob('../pages/blog/*.md');
+import { prepareSearchIndex } from '../pages/search.js';
+const staticIndex = JSON.stringify(prepareSearchIndex(posts));
+
+const map = {};
+posts.forEach(p => {
+map[p.url] = {title: p.frontmatter.title, url: p.url, type: "page"}
+p.getHeadings().forEach(heading => {
+const headingUrl = p.url + "#" + heading.slug;
+map[headingUrl] = {title: p.frontmatter.title, heading: heading.text,  url: headingUrl, type: "heading"}
+})
+})
+
+
+---
+<script is:inline define:vars={{ staticIndex, map }}>
+    var idx = lunr.Index.load(JSON.parse(staticIndex))
+
+    function searchPosts(term) {
+        const res = idx.search(term);
+        return res.map(r => map[r.ref])
+    }
+</script>
+<div x-data="{ result: [{ title: 'Markdown Style Guide', url: '/blog/markdown-style-guide', type:'heading' },{ title: 'Second post', url: '/blog/second-post', type:'heading'  },{ title: 'Third post', url: '/blog/third-post', type:'post'  }],searchTerm: '', handleChange(event) { this.result = searchPosts(this.searchTerm) }, typeToIcon(type) { return 'bi:hash'}}">
+    <div class="border-2 p-4 rounded-lg">
+        <div class="relative">
+            <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search"
+                     viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+            </div>
+            <input type="search" id="default-search"
+                   x-model="searchTerm"
+                   x-on:input.change="handleChange($event)"
+                   class="block p-4 pl-10 w-full text-sm rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                   placeholder="Search here" required>
+            <button type="submit"
+                    class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                Search
+            </button>
+        </div>
+        <div>
+            <h4 class="font-bold pt-4 text-sm">Blog posts</h4>
+            <template x-for="result in result">
+                <a x-bind:href="result.url">
+                    <div class="mt-1 py-4 px-2 bg-red border-2 border-slate-300 hover:bg-black flex justify-between align-item-center align-center justify-center items-center text-black hover:text-white">
+                        <div class="flex items-center">
+                            <template x-if="result.type == 'heading'">
+                                <Icon class="h-16 w-16 border-r-2 mr-2" name="bi:hash" />
+                            </template>
+                            <template x-if="result.type !== 'heading'">
+                                <Icon class="h-16 w-16 border-r-2 mr-2" name="bi:justify-left" />
+                            </template>
+                            <h3 class="font-bold ml-4" x-text="result.title"/>
+                        </div>
+                        <Icon name="bi:arrow-return-left" class="h-8 w-8 mr-4 float-right"/>
+                    </div>
+                </a>
+            </template>
+        </div>
+        <div>
+
+        </div>
