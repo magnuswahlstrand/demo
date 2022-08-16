@@ -1,0 +1,32 @@
+---
+export interface Props {
+title: string;
+}
+
+const { title } = Astro.props as Props;
+import '../styles/styles.css';
+import Navbar from '../components/Navbar'
+import '@fontsource/open-sans/300.css';
+import '@fontsource/open-sans/400.css';
+import '@fontsource/open-sans/500.css';
+import '@fontsource/open-sans/800.css';
+import '@fontsource/lora/400-italic.css';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width"/>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+    <meta name="generator" content={Astro.generator}/>
+    <title>{title}</title>
+</head>
+<body class="bg-white pt-20">
+    <Navbar client:only="react"/>
+    <div class="p-4">
+        <slot/>
+    </div>
+    </div>
+</body>
+</html>

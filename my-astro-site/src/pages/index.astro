@@ -1,0 +1,30 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
+import Header from '../components/Header.astro';
+
+const p = await Astro.glob('./*.mdx');
+
+const { href, title, body, date, subtitle= '' } = Astro.props as Props;
+import ArticleHeader from "../components/ArticleHeader.astro"
+---
+
+
+<Layout title="Welcome to Astro">
+    <Header/>
+    <main>
+        <ul class="pt-2">
+            {p.map((post) => (
+            <li class="pt-6">
+                <ArticleHeader href={post.url}
+                               title={post.frontmatter.title}
+                               subtitle={post.frontmatter.subtitle}
+                               date={post.frontmatter.date}/>
+                <p>
+                    {post.frontmatter.body}
+                </p>
+            </li>
+            ))}
+        </ul>
+    </main>
+</Layout>

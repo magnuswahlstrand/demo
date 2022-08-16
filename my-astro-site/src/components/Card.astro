@@ -1,0 +1,21 @@
+---
+export interface Props {
+title: string;
+body: string;
+href: string;
+subtitle: string;
+date: string;
+}
+
+const { href, title, body, date, subtitle= '' } = Astro.props as Props;
+import ArticleHeader from "./ArticleHeader.astro"
+---
+
+<li>
+    <a href={href}>
+        <ArticleHeader date={date} title={title} subtitle={subtitle}/>
+    </a>
+    <p>
+        {body}
+    </p>
+</li>

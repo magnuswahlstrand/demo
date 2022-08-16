@@ -1,0 +1,13 @@
+---
+import Layout from './Layout.astro'
+import ArticleHeader from '../components/ArticleHeader.astro'
+
+const {frontmatter} = Astro.props;
+---
+
+<Layout>
+    <ArticleHeader date={frontmatter.date} title={frontmatter.title} subtitle={frontmatter.subtitle}/>
+    <article class="prose">
+        <slot/>
+    </article>
+</Layout>

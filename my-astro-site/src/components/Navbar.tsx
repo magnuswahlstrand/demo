@@ -1,57 +1,90 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
 function useScrollPosition() {
-    const [scrollPosition, setScrollPosition] = useState(window.scrollY);
-    const handleScroll = () => {
-        const position = window.scrollY;
-        setScrollPosition(position);
+  const [scrollPosition, setScrollPosition] = useState(window.scrollY);
+  const handleScroll = () => {
+    const position = window.scrollY;
+    setScrollPosition(position);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
     };
-
-    useEffect(() => {
-        window.addEventListener("scroll", handleScroll);
-
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-        };
-    }, []);
-    return scrollPosition;
+  }, []);
+  return scrollPosition;
 }
 
-const HeaderX = () => {
-    const scrollPosition = useScrollPosition();
+const Navbar = () => {
+  const scrollPosition = useScrollPosition();
 
-    const paddingY = scrollPosition < 100 ? "py-6" : "py-2";
+  const paddingY = scrollPosition < 100 ? "sm:py-6 py-2" : "py-2";
+  const hideAvatar = scrollPosition < 100 ? "opacity-100" : "opacity-0";
 
-    return (
-        <header>
-            <div className={`text-neutral-700 border-b border-b-gray-0 px-2  bg-gray-100 fixed w-full top-0 duration-200 transition-all ${paddingY}`}>
-                <div className="flex justify-between items-center font-extrabold">
-                    <div className="text-lg"><a href="https://wahlstrand.dev">wahlstrand.dev</a></div>
-                    <div>
-                        <ul className="flex content-center text-xs uppercase font-bold space-x-8 mr-3">
-                            <li>
-                                <a className="hover:text-blue-800" href="/">Fragments</a>
-                            </li>
-                            <li>
-                                <a className="hover:text-blue-800" href="/">Tags</a>
-                            </li>
-                            <li>
-                                <a className="hover:text-blue-800" href="/">Now</a>
-                            </li>
-                            <li>
-                                <a className="text-blue-800" href="/">About</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div className="grid bg-red-500 content-center">
-                <h1>wahlstrand.dev</h1>
-                Go, Databases and Product Development
-            </div>
-            <h1>aa</h1>
+  return (
+    <header>
+      <div
+        className={`border-b-gray-0 fixed top-0  w-full border-b bg-gray-100 px-4 transition-all duration-500 ${paddingY}`}
+      >
+        <div className="flex items-center justify-between font-extrabold">
+          <h5 className="text-lg">
+            <a href="https://wahlstrand.dev">wahlstrand.dev</a>
+          </h5>
+          <div className="base-color hidden flex-row content-center space-x-3 text-xs uppercase tracking-wider sm:flex">
+            <ul className="flex flex-row space-x-6">
+              <li>
+                <a href="/">Fragments</a>
+              </li>
+              <li>
+                <a href="/">Tags</a>
+              </li>
+              <li>
+                <a href="/">Now</a>
+              </li>
+              <li>
+                <a href="/">About</a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <button
+              data-collapse-toggle="mobile-menu-2"
+              type="button"
+              className="inline-flex items-center rounded hover:bg-gray-200 sm:hidden"
+              aria-controls="mobile-menu-2"
+              aria-expanded="false"
+            >
+              <svg
+                className="h-8 w-8 border p-1"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div
+          className={`flex flex-col items-center transition-all duration-500 ${hideAvatar}`}
+        >
+          <div className="absolute h-12 w-12">
+            <img
+              className="rounded-full shadow-xl"
+              src="https://magnuswahlstrand.github.io/img/avatar-icon.png"
+              alt="wahlstrand.dev"
+            />
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
 
-        </header>)
-}
-
-export default HeaderX;
+export default Navbar;
