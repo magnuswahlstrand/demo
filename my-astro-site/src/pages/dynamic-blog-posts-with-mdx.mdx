@@ -15,10 +15,21 @@ export const meta = {
     author: 'Magnus Wahlstrand'
 }
 
-```js hello.js title="src/pages/named-slots.astro" foo=bar baz='qux loz'
+[//]: # (<div class="remark-code-title px-5 py-1 bg-black w-min text-white rounded-t-md text-md">astro.config.mjs</div>)
+
+```js hello.js title="astro.config.mjs"
 const foo = 'bar';
 
 const bar = 123;
+
+import remarkToc from 'remark-toc';
+
+    export default {
+        integrations: [mdx({
+            // apply remark-toc alongside GitHub-flavored markdown and Smartypants
+            remarkPlugins: { extends: [remarkToc] },
+        })],
+    }
 ```
 
 A few weeks I wrote a post about using [tRPC](https://trpc.io/) to get type safe requests between a web client and the

@@ -8,6 +8,7 @@
  * This work is licensed under the Creative Commons CC0 1.0 Universal License
  */
 
+
 code[class*="language-"],
 pre[class*="language-"] {
     font-family: "Fira Mono", Menlo, Monaco, "Lucida Console", "Courier New", Courier, monospace;
@@ -130,4 +131,16 @@ pre[class*="language-"] {
 pre > code.highlight {
     outline: .4em solid red;
     outline-offset: .4em;
+}
+
+
+/* Added by Magnus */
+.remark-code-title {
+    font-family: "Fira Mono", Menlo, Monaco, "Lucida Console", "Courier New", Courier, monospace;
+}
+
+.remark-code-title + code,
+.remark-code-title + pre {
+    margin-top: 0;
+    border-top-left-radius: 0;
 }

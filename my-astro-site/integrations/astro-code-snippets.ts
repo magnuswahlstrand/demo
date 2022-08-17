@@ -1,4 +1,4 @@
-import type { BlockContent, Parent, Root, Content } from "mdast";
+import type { BlockContent, Parent, Root } from "mdast";
 import type { Transformer } from "unified";
 import { visit } from "unist-util-visit";
 import type { BuildVisitor } from "unist-util-visit/complex-types";
@@ -27,6 +27,7 @@ export interface CodeSnippetWrapper extends Parent {
   type: "codeSnippetWrapper";
   children: BlockContent[];
 }
+
 export interface CodeSnippetWrapper2 extends Parent {
   type: "html";
   children: BlockContent[];
@@ -91,8 +92,14 @@ function parseMeta(meta: string) {
   );
 }
 
-export default function retextSentenceSpacing() {
-  return (tree: Root) => {
+type PluginOptions = {
+  classes?: string;
+};
+
+export default function retextSentenceSpacing(
+  pluginOptions: PluginOptions = {}
+) {
+  return () => (tree: Root) => {
     visit(tree, "code", (node, index, parent) => {
       if (index === null || parent === null) return;
 
@@ -106,11 +113,14 @@ export default function retextSentenceSpacing() {
       const title = metadata.get("title");
       console.log(title);
 
-      const className = "remark-code-title";
+      const classes = "remark-code-title " + pluginOptions.classes ?? "";
+
       const titleNode: CodeSnippetWrapper2 = {
         type: "html",
-        value: `<pre class="${className}">${title}</pre>`,
+        value: `<div class="${classes}">${title}</div>`,
       };
+
+      // px-5 py-1 bg-black w-min text-white rounded-t-md text-md
 
       // const titleNode: CodeSnippetWrapper2 = {
       //   type: "codeSnippetWrapper",
@@ -129,16 +139,11 @@ export default function retextSentenceSpacing() {
       // };
 
       console.log(parent.children.length);
-      parent.children.splice(index - 1 ?? 0, 0, titleNode);
+      parent.children.splice(index ?? 0, 0, titleNode);
+      // TODO: This indicates that we do a double pass. Is there a better way to visit?
       node.meta = "";
     });
   };
-
-  // const visitor: BuildVisitor<Root, "code"> = (code, index, parent) => {
-
-  // const transformer: Transformer<Root> = (tree) => {
-  //   visit(tree, "code", (code, index, parent));
-  // };
 }
 
 export function remarkCodeSnippets(): Plugin<[], Root> {
@@ -238,6 +243,7 @@ export function remarkCodeSnippets(): Plugin<[], Root> {
     return transformer;
   };
 }
+
 //
 // /**
 //  * Parses the given meta information string and returns contained supported properties.
