@@ -1,0 +1,6 @@
+import { Prism } from "@astrojs/prism";
+
+export const UpgradedPrism = () => {
+  console.log(<Prism lang="js" code={`const foo = 'bar'`} />);
+  return <Prism lang="js" code={`const foo = 'bar'`} />;
+};
