@@ -22,11 +22,13 @@
     "react-dom": "^18.2.0"
   },
   "dependencies": {
+    "@astrojs/prism": "^1.0.1",
     "@fontsource/lora": "^4.5.11",
     "@fontsource/open-sans": "^4.5.11",
     "@mantine/core": "^5.1.1",
     "@mantine/form": "^5.1.1",
     "@types/react": "^18.0.17",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "remark-code-titles": "^0.1.2"
   }
 }

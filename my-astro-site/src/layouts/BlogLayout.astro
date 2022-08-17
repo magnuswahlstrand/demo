@@ -7,7 +7,7 @@ const {frontmatter} = Astro.props;
 
 <Layout>
     <ArticleHeader date={frontmatter.date} title={frontmatter.title} subtitle={frontmatter.subtitle}/>
-    <article class="prose">
+    <article class="prose mt-4">
         <slot/>
     </article>
 </Layout>
