@@ -6,8 +6,10 @@ const {frontmatter} = Astro.props;
 ---
 
 <Layout>
-    <ArticleHeader date={frontmatter.date} title={frontmatter.title} subtitle={frontmatter.subtitle}/>
-    <article class="prose mt-4">
-        <slot/>
-    </article>
+    <div class="pt-4">
+        <ArticleHeader date={frontmatter.date} title={frontmatter.title} subtitle={frontmatter.subtitle}/>
+        <article class="prose mt-4 xl:prose-xl">
+            <slot/>
+        </article>
+    </div>
 </Layout>

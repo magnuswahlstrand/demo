@@ -17,6 +17,17 @@ export const meta = {
 
 [//]: # (<div class="remark-code-title px-5 py-1 bg-black w-min text-white rounded-t-md text-md">astro.config.mjs</div>)
 
+
+A few weeks I wrote a post about using [tRPC](https://trpc.io/) to get type safe requests between a web client and the
+server. It turns out that there is an _**even simpler**_ way of calling your AWS backend (still using tRPC) 🤯!
+
+In this post I will show you how to use tRPC and a Lambda function
+with [Lambda Function URLs](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html) to create a ToDo-app for my
+terminal. The backend is deployed to AWS using the [Serverless Stack](https://sst.dev/).
+
+This post is divided into two sections.
+
+
 ```js hello.js title="astro.config.mjs"
 const foo = 'bar';
 
@@ -31,15 +42,6 @@ import remarkToc from 'remark-toc';
         })],
     }
 ```
-
-A few weeks I wrote a post about using [tRPC](https://trpc.io/) to get type safe requests between a web client and the
-server. It turns out that there is an _**even simpler**_ way of calling your AWS backend (still using tRPC) 🤯!
-
-In this post I will show you how to use tRPC and a Lambda function
-with [Lambda Function URLs](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html) to create a ToDo-app for my
-terminal. The backend is deployed to AWS using the [Serverless Stack](https://sst.dev/).
-
-This post is divided into two sections.
 
 **Section 1 -** First we set up our Lambda function with a public HTTPS endpoint and set up a type safe remote
 procedure call using tRPC.

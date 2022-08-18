@@ -19,15 +19,18 @@ import '@fontsource/lora/400-italic.css';
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width"/>
     <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
-    <link href="themes/prism-hopscotch.css" rel="stylesheet" />
+    <link href="themes/prism-hopscotch.css" rel="stylesheet"/>
     <meta name="generator" content={Astro.generator}/>
     <title>{title}</title>
 </head>
 <body class="bg-white pt-20">
-    <Navbar client:only="react"/>
-    <div class="p-4">
-        <slot/>
+
+<Navbar client:only="react"/>
+    <div class="w-full sm:max-w-2xl mx-auto">
+        <div class="flex flex-col items-start p-2">
+            <slot/>
+        </div>
     </div>
-    </div>
+</div>
 </body>
 </html>
