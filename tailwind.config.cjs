@@ -3,6 +3,7 @@ module.exports = {
     mode: 'jit',
     content: [
         './public/**/*.html',
+        './public/**/*.css',
         './src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'
     ],
     theme: {
