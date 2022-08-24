@@ -6,6 +6,8 @@ title: string;
 const { title } = Astro.props as Props;
 import '../styles/styles.css';
 import '../styles/prism-hopscotch.css';
+import favicon from '../images/favicon.ico';
+
 import Navbar from '../components/Navbar'
 import '@fontsource/open-sans/300.css';
 import '@fontsource/open-sans/400.css';
@@ -19,7 +21,7 @@ import '@fontsource/lora/400-italic.css';
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width"/>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+    <link rel="icon" type="image/x-icon" href={favicon}/>
     <meta name="generator" content={Astro.generator}/>
     <title>{title}</title>
 </head>
