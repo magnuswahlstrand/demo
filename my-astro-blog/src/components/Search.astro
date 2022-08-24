@@ -23,8 +23,9 @@ map[headingUrl] = {title: p.frontmatter.title, heading: heading.text,  url: head
         const res = idx.search(term);
         return res.map(r => map[r.ref])
     }
+
 </script>
-<div x-data="{ result: [{ title: 'Markdown Style Guide', url: '/blog/markdown-style-guide', type:'heading' },{ title: 'Second post', url: '/blog/second-post', type:'heading'  },{ title: 'Third post', url: '/blog/third-post', type:'post'  }],searchTerm: '', handleChange(event) { this.result = searchPosts(this.searchTerm) }, typeToIcon(type) { return 'bi:hash'}}">
+<div x-data="{ result: [{ title: 'Markdown Style Guide', url: '/blog/markdown-style-guide', type:'heading', heading:'lol' },{ title: 'Second post', url: '/blog/second-post', type:'heading', heading:'lol2'  },{ title: 'Third post', url: '/blog/third-post', type:'post'  }],searchTerm: '', handleChange(event) { this.result = searchPosts(this.searchTerm) }, typeToIcon(type) { return 'bi:hash'}}">
     <div class="border-2 p-4 rounded-lg">
         <div class="relative">
             <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
@@ -48,13 +49,15 @@ map[headingUrl] = {title: p.frontmatter.title, heading: heading.text,  url: head
             <template x-for="result in result">
                 <a x-bind:href="result.url">
                     <div class="mt-1 py-4 px-2 bg-red border-2 border-slate-300 hover:bg-black flex justify-between align-item-center align-center justify-center items-center text-black hover:text-white">
-                        <div class="flex items-center">
-                            <template x-if="result.type == 'heading'">
-                                <Icon class="h-16 w-16 border-r-2 mr-2" name="bi:hash" />
-                            </template>
-                            <template x-if="result.type !== 'heading'">
-                                <Icon class="h-16 w-16 border-r-2 mr-2" name="bi:justify-left" />
-                            </template>
+                        <div x-show="result.type == 'heading'" class="flex items-center">
+                            <Icon class="h-16 w-16 border-r-2 mr-2" name="bi:hash"/>
+                            <div class="flex flex-col ml-2">
+                                <h3 class="font-bold" x-text="result.heading"/>
+                                <h3 class="" x-text="'from ' + result.title"/>
+                            </div>
+                        </div>
+                        <div x-show="result.type !== 'heading'" class="flex items-center">
+                            <Icon class="h-16 w-16 border-r-2" name="bi:justify-left"/>
                             <h3 class="font-bold ml-4" x-text="result.title"/>
                         </div>
                         <Icon name="bi:arrow-return-left" class="h-8 w-8 mr-4 float-right"/>

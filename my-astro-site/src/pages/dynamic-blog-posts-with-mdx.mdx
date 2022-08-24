@@ -9,13 +9,41 @@ body: 'Something about pitch'
 
 
 import {UpgradedPrism} from '../components/UpgradedPrism.astro';
+import CodeSnippet from '../components/CodeSnippet/CodeSnippet.astro';
 import {Prism} from '@astrojs/prism';
 
 export const meta = {
     author: 'Magnus Wahlstrand'
 }
 
+## Code Example
+
+```typescript:lib/mdx.ts
+// code here
+```
+
 [//]: # (<div class="remark-code-title px-5 py-1 bg-black w-min text-white rounded-t-md text-md">astro.config.mjs</div>)
+
+```js hello.js title="astro.config.mjs"
+const foo = 'bar';
+
+const bar = 123;
+
+import remarkToc from 'remark-toc';
+
+    export default {
+        integrations: [mdx({
+            // apply remark-toc alongside GitHub-flavored markdown and Smartypants
+            remarkPlugins: { extends: [remarkToc] },
+        })],
+    }
+```
+
+## Code Example
+
+```typescript:lib/mdx.ts
+// code here
+```
 
 
 A few weeks I wrote a post about using [tRPC](https://trpc.io/) to get type safe requests between a web client and the
@@ -28,7 +56,7 @@ terminal. The backend is deployed to AWS using the [Serverless Stack](https://ss
 This post is divided into two sections.
 
 
-```js hello.js title="astro.config.mjs"
+```js:title hello.js title="astro.config.mjs"
 const foo = 'bar';
 
 const bar = 123;

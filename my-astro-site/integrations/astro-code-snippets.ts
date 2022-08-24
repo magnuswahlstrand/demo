@@ -1,78 +1,14 @@
-import type { BlockContent, Parent, Root } from "mdast";
-import type { Transformer } from "unified";
-import { visit } from "unist-util-visit";
+import type { Root as MdastRoot } from "mdast";
+import type { Plugin, Transformer } from "unified";
+import { visit, CONTINUE, EXIT, SKIP } from "unist-util-visit";
 import type { BuildVisitor } from "unist-util-visit/complex-types";
 
-const CodeSnippetTagname = "AutoImportedCodeSnippet";
-const LanguageGroups = {
-  code: [
-    "astro",
-    "cjs",
-    "htm",
-    "html",
-    "js",
-    "jsx",
-    "mjs",
-    "svelte",
-    "ts",
-    "tsx",
-    "vue",
-  ],
-  data: ["env", "json", "yaml", "yml"],
-  styles: ["css", "less", "sass", "scss", "styl", "stylus"],
-  textContent: ["markdown", "md", "mdx"],
-};
-
-export interface CodeSnippetWrapper extends Parent {
-  type: "codeSnippetWrapper";
-  children: BlockContent[];
-}
-
-export interface CodeSnippetWrapper2 extends Parent {
-  type: "html";
-  children: BlockContent[];
-}
-
-declare module "mdast" {
-  interface BlockContentMap {
-    codeSnippetWrapper: CodeSnippetWrapper;
-  }
-}
+const re = new RegExp(/(\w+)\s*=\s*('.+'|".+"|\w+)/g);
+const quotes = new RegExp(/(^['"]?|['"]?$)/g);
 
 // Mix of
 // https://github.com/withastro/docs/blob/c5c0eaa921d2f1779f756edfad346d21c7c5b2e0/integrations/astro-code-snippets.ts and
 // https://github.com/mottox2/remark-code-titles/blob/master/index.js
-export function MAGNUS(options): Transformer<Root> {
-  return (code) =>
-    visit(code, "code", (node, index) => {
-      const nodeLang = node.lang || "";
-      console.log(node.lang);
-      let language = "",
-        title = "";
-
-      if (nodeLang.includes(":")) {
-        language = nodeLang.slice(0, nodeLang.search(":"));
-        title = nodeLang.slice(nodeLang.search(":") + 1, nodeLang.length);
-      }
-
-      if (!title) {
-        return;
-      }
-      //
-      // const className = "remark-code-title";
-      //
-      // const titleNode = {
-      //   type: "html",
-      //   value: `<div class="${className}">${title}</div>`.trim(),
-      // };
-      //
-      // code.children.splice(index ?? 0, 0, titleNode);
-      // node.lang = language;
-    });
-}
-
-const re = new RegExp(/(\w+)\s*=\s*('.+'|".+"|\w+)/g);
-const quotes = new RegExp(/(^['"]?|['"]?$)/g);
 
 /* Parses the metadata from code snippets
 ```js title='Some title'
@@ -98,51 +34,91 @@ type PluginOptions = {
 
 export default function retextSentenceSpacing(
   pluginOptions: PluginOptions = {}
-) {
-  return () => (tree: Root) => {
+): Plugin<[], MdastRoot> {
+  return () => (tree: MdastRoot) => {
     visit(tree, "code", (node, index, parent) => {
       if (index === null || parent === null) return;
 
-      console.log(node);
-      console.log(node.meta);
+      // console.log(node);
+      // console.log(node.meta);
       const meta = node.meta || "";
       const metadata = parseMeta(meta);
 
       // Return early if title is not set
+      console.log(node);
       if (!metadata.has("title")) return;
       const title = metadata.get("title");
-      console.log(title);
 
       const classes = "remark-code-title " + pluginOptions.classes ?? "";
 
-      const titleNode: CodeSnippetWrapper2 = {
+      const titleNode = {
         type: "html",
         value: `<div class="${classes}">${title}</div>`,
       };
 
-      // px-5 py-1 bg-black w-min text-white rounded-t-md text-md
+      console.log("REMOVE");
+      parent.children.splice(index, 0, titleNode);
 
-      // const titleNode: CodeSnippetWrapper2 = {
-      //   type: "codeSnippetWrapper",
-      //   data: {
-      //     hName: CodeSnippetTagname,
-      //     hProperties: {
-      //       lang: code.lang,
-      //       title: encodeMarkdownStringProp(title),
-      //       removedLineIndex,
-      //       removedLineCount,
-      //       lineMarkings: encodeMarkdownStringArrayProp(lineMarkings),
-      //       inlineMarkings: encodeMarkdownStringArrayProp(inlineMarkings),
-      //     },
-      //   },
-      //   children: [code],
-      // };
-
-      console.log(parent.children.length);
-      parent.children.splice(index ?? 0, 0, titleNode);
+      // return CONTINUE;
       // TODO: This indicates that we do a double pass. Is there a better way to visit?
       node.meta = "";
     });
+  };
+}
+
+export function LOL(pluginOptions: PluginOptions = {}): Plugin<[], MdastRoot> {
+  return () => (tree: MdastRoot) => {
+    visit(tree, "code", (node, index, parent) => {
+      if (index === null || parent === null) return;
+
+      // console.log(node);
+      // console.log(node.meta);
+      const meta = node.meta || "";
+      const metadata = parseMeta(meta);
+
+      // Return early if title is not set
+      console.log(node);
+      if (!metadata.has("title")) return;
+      const title = metadata.get("title");
+
+      const classes = "remark-code-title " + pluginOptions.classes ?? "";
+
+      node.meta = "";
+      const titleNode = {
+        type: "codeSnippetWrapper",
+        data: { hName: CodeSnippetTagname },
+        children: [node],
+      };
+
+      console.log("REMOVE");
+
+      parent.children.splice(index, 1, titleNode);
+
+      // TODO: This indicates that we do a double pass. Is there a better way to visit?
+    });
+  };
+}
+
+import type { AstroIntegration } from "astro";
+
+export const CodeSnippetTagname = "CodeSnippet.astro";
+export function astroCodeSnippets(): AstroIntegration {
+  return {
+    name: "magnus-code-snippets",
+    hooks: {
+      "astro:config:setup": ({ config, injectScript, updateConfig }) => {
+        // updateConfig({
+        //   markdown: {
+        //     remarkPlugins: [LOL()],
+        //   },
+        // });
+        // Auto-import the Aside component and attach it to the global scope
+        injectScript(
+          "page-ssr",
+          `import ${CodeSnippetTagname} from "~/components/CodeSnippet/CodeSnippet.astro"; global.${CodeSnippetTagname} = ${CodeSnippetTagname};`
+        );
+      },
+    },
   };
 }
 

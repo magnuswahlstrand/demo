@@ -1,23 +1,25 @@
 ---
 layout: "../../layouts/BlogPost.astro"
-title: "Markdown Style Guide"
-description: "Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro."
+title: "Cats"
 pubDate: "Jul 01 2022"
 heroImage: "/placeholder-hero.jpg"
 ---
 
-Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.
+# Cats
 
-## Headings
+This is a page about cats
 
-The following HTML `<h1>`—`<h6>` elements represent six levels of section headings. `<h1>` is the highest section level while `<h6>` is the lowest.
+## History
 
-<abbr title="Graphics Interchange Format">GIF</abbr> is a bitmap image format.
+In the past, most notably in Egypt, people kept domestic cats because they hunted and ate mice and rats. Today, people often keep cats as pets. There are also domestic cats which live without being cared for by people. These kinds of cats are called "feral cats".
 
-H<sub>2</sub>O
+The oldest evidence of cats kept as pets is from the Mediterranean island of Cyprus, around 7500 BC. Ancient Egyptians worshipped cats as gods, and often mummified them so they could be with their owners "for all of eternity".
 
-X<sup>n</sup> + Y<sup>n</sup> = Z<sup>n</sup>
+Today, special food for cats is widely available in the developed countries. Proper feeding will help a cat live longer compared to hunting or being fed table scraps. Not correctly feeding a cat can lead to problems (see below for health concerns).
 
-Press <kbd><kbd>CTRL</kbd>+<kbd>ALT</kbd>+<kbd>Delete</kbd></kbd> to end the session.
+Cats cannot taste sweet foods (with sugar) because of a mutation (change) in their ancestors which removed the ability to taste sweet things.
 
-Most <mark>salamanders</mark> are nocturnal, and hunt for insects, worms, and other small creatures.
+
+## Grooming
+
+Cats are very clean animals. They groom themselves by licking their fur. The cat's tongue can act as a hairbrush and can clean and untangle a cat's fur. Still, owners may buy grooming products to help the cat take care of itself. After licking their fur, cats sometimes get hairballs. A hairball is a small amount of fur that is vomited up by animals when it becomes too big. This is quite normal. Owners brush their cats to try to prevent a lot of hairballs.
