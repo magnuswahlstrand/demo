@@ -5,7 +5,7 @@ import tailwind from "@astrojs/tailwind";
 
 // https://astro.build/config
 export default defineConfig({
-    site: "https://magnuswahlstrand.github.io/demo",
+    site: "https://magnuswahlstrand.github.io",
     base: "https://magnuswahlstrand.github.io/demo",
     integrations: [
         mdx({
