@@ -12,10 +12,11 @@ MDX is a way of writing Markdown that allows you to write content in a dynamic w
 
 
 
-```js
+```jsx
+// Import component
 import {Chart} from '../components/Chart';
 
-<Chart client:load initialYear={"2022"} />
+<Chart client:load initialYear={2022} />
 ```
 
 <Chart client:load initialYear={year} />
