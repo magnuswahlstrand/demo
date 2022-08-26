@@ -20,7 +20,6 @@ function useScrollPosition() {
 const Navbar = () => {
   const scrollPosition = useScrollPosition();
   const [menuOpen, setMenuOpen] = useState(false);
-  console.log(menuOpen);
 
   const paddingY = scrollPosition < 100 ? "sm:py-6 py-2" : "py-2";
   const hideAvatar =

@@ -6,17 +6,25 @@ date: '2020-01-01'
 body: 'Something about pitch'
 ---
 import {Chart} from '../components/Chart';
-export const year = 2022;
+import {BetterCodeSnippet} from "../components/BetterCodeSnippet";
+
+
+export const accessKey = 2022;
 
 MDX is a way of writing Markdown that allows you to write content in a dynamic way.
 
+<BetterCodeSnippet client:load lang="bash" code={`curl -X POST
+    -H "Authorization: Bearer $API_KEY"
+    -H "Content-Type: application/json; charset=utf-8"
+    "https://api.com/v1/projects/$PROJECT_ID/datasets"`}
+/>
 
 
-```jsx
+```js
 // Import component
 import {Chart} from '../components/Chart';
 
-<Chart client:load initialYear={2022} />
+<Chart initialYear={2022} />
 ```
 
-<Chart client:load initialYear={year} />
+<Chart client:load initialYear={2022} />
