@@ -1,6 +1,6 @@
 // @flow
 import * as React from 'react';
-import {useRef, useState} from 'react';
+import {useReducer, useState} from 'react';
 import * as Prism from 'prismjs';
 import {useCopyToClipboard} from "react-use";
 
@@ -10,21 +10,25 @@ export interface Props {
     code: string;
 }
 
-export function BetterCodeSnippet(props: Props) {
-    const [show, setShow] = useState(false);
-    const [clickedVersion, setClickedVersion] = useState(0);
-    const countRef = useRef(clickedVersion);
-    countRef.current = clickedVersion;
+function useShowForDuration(duration: number) {
+    const [lastClicked, setLastClicked] = useState(0);
+    const [, forceRefresh] = useReducer(x => x + 1, 0);
 
-    const showComponent = () => {
-        const version = clickedVersion + 1
-        setShow(true);
-        setClickedVersion((_) => version);
+    const markAsClicked = () => {
+        setLastClicked(() => new Date().getTime());
         setTimeout(() => {
-            if (countRef.current === version)
-                setShow(false);
-        }, 900)
+            forceRefresh();
+        }, duration)
     }
+
+    return {
+        isClicked: new Date().getTime() - lastClicked < (duration - 50),
+        markAsClicked,
+    }
+}
+
+export function BetterCodeSnippet(props: Props) {
+    const {isClicked, markAsClicked} = useShowForDuration(900);
 
 
     const [apiKey, setApiKey] = useState('');
@@ -42,7 +46,7 @@ export function BetterCodeSnippet(props: Props) {
 
     const handleCopy = () => {
         copyToClipboard(replacedCode)
-        showComponent()
+        markAsClicked()
     }
     const [state, copyToClipboard] = useCopyToClipboard();
 
@@ -75,7 +79,7 @@ export function BetterCodeSnippet(props: Props) {
                 <div className={"relative"}>
                     <div className={"absolute right-0"}>
                         <button type="button" onClick={handleCopy}>
-                            {show ? <CheckMarkIcon/> : <CopyIcon/>}
+                            {isClicked ? <CheckMarkIcon/> : <CopyIcon/>}
                         </button>
                         </div>
                 </div>

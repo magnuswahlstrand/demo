@@ -1,7 +1,8 @@
-import {Canvas, extend, useFrame, useThree} from "@react-three/fiber";
+import {Canvas, extend, useFrame, useLoader, useThree} from "@react-three/fiber";
+import {useTexture} from "@react-three/drei";
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import {useEffect, useMemo, useRef} from "react";
-import {BufferGeometry, Color, Float32BufferAttribute, InstancedMesh, Mesh} from "three";
+import {BufferGeometry, Color, Float32BufferAttribute, ImageBitmapLoader, InstancedMesh, Mesh} from "three";
 import niceColors from 'nice-color-palettes'
 import {Debug, Physics, useHeightfield, useSphere} from '@react-three/cannon'
 
@@ -100,8 +101,12 @@ function generateHeights(sizeX: number, sizeY: number) {
     return heights;
 }
 
-const sizeX = 15
-const sizeY = 15
+
+const heights2 = [[0.48,0.72,1.23,2.22,2.82,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97],[0,0,0.03,0.6,2.07,2.85,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97],[0.45,0.18,0,0.03,0.75,2.37,2.94,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97],[2.25,1.53,0.36,0,0.09,1.5,2.82,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97],[2.97,2.67,1.38,0.09,0,0.84,2.58,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97],[2.97,2.94,2.22,0.42,0,0.42,2.22,2.94,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97],[2.97,2.97,2.61,0.93,0,0.12,1.59,2.82,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97],[2.97,2.97,2.82,1.59,0.12,0,0.78,2.49,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97],[2.97,2.97,2.94,2.28,0.48,0,0.24,1.8,2.79,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97],[2.97,2.97,2.97,2.7,1.23,0.06,0.03,0.6,1.74,2.43,2.76,2.88,2.94,2.94,2.94,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97],[2.97,2.97,2.97,2.91,2.19,0.54,0,0.03,0.21,0.63,1.32,1.83,2.1,2.19,2.28,2.4,2.61,2.82,2.94,2.97,2.97,2.97,2.97,2.97,2.97],[2.97,2.97,2.97,2.97,2.79,1.89,0.54,0.06,0,0,0.06,0.18,0.27,0.36,0.39,0.57,0.9,1.47,2.25,2.76,2.97,2.97,2.97,2.97,2.97],[2.97,2.97,2.97,2.97,2.97,2.79,2.19,1.35,0.69,0.18,0.03,0.03,0,0,0,0,0,0.09,0.57,1.71,2.67,2.97,2.97,2.97,2.97],[2.97,2.97,2.97,2.97,2.97,2.97,2.91,2.76,2.43,1.77,1.26,1.02,0.84,0.78,0.69,0.45,0.18,0,0,0.27,1.56,2.7,2.97,2.97,2.97],[2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.88,2.76,2.67,2.61,2.58,2.49,2.25,1.68,0.72,0.09,0,0.39,1.95,2.88,2.97,2.97],[2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.94,2.82,2.28,0.99,0.06,0.03,0.87,2.49,2.97,2.97],[2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.88,2.22,0.6,0,0.21,1.74,2.82,2.97],[2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.79,1.53,0.15,0,0.87,2.52,2.97],[2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.94,2.34,0.6,0,0.27,1.83,2.82],[2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.76,1.41,0.09,0.03,0.84,2.37],[2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.94,2.28,0.6,0,0.15,1.17],[2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.76,1.74,0.3,0,0.15],[2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.64,1.44,0.27,0],[2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.94,2.64,1.65,0.54],[2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.97,2.76,2.22]]
+
+
+const sizeX = 50
+const sizeY = 50
 
 function H2(): JSX.Element {
     const ref = useRef<BufferGeometry>(null)
@@ -110,7 +115,8 @@ function H2(): JSX.Element {
         if (!ref.current) return
 
 
-        var heights = generateHeights(sizeX, sizeY);
+        // var heights = generateHeights(sizeX, sizeY);
+        const heights = heights2
 
         const dx = 1
         const dy = 1
@@ -145,7 +151,7 @@ function H2(): JSX.Element {
     return <bufferGeometry ref={ref}/>
 }
 
-function Spheres({ columns, rows, spread }: { columns: number; rows: number; spread: number }): JSX.Element {
+function Spheres({columns, rows, spread}: { columns: number; rows: number; spread: number }): JSX.Element {
     const number = rows * columns
     const [ref] = useSphere(
         (index) => ({
@@ -173,22 +179,24 @@ function Spheres({ columns, rows, spread }: { columns: number; rows: number; spr
     return (
         <instancedMesh ref={ref} castShadow receiveShadow args={[undefined, undefined, number]}>
             <sphereBufferGeometry args={[0.2, 16, 16]}>
-                <instancedBufferAttribute attach="attributes-color" args={[colors, 3]} />
+                <instancedBufferAttribute attach="attributes-color" args={[colors, 3]}/>
             </sphereBufferGeometry>
-            <meshPhongMaterial vertexColors />
+            <meshPhongMaterial vertexColors/>
         </instancedMesh>
     )
 }
 
 function MyMesh() {
-    const rotation: [number, number, number] = [-Math.PI / 2, 0, 0];
-    let position: [number, number, number] = [-7, -3, 7];
+    const rotation: [number, number, number] = [-Math.PI / 2 - 0.4, 0, 0];
+    let position: [number, number, number] = [-7, 0, 7];
     const elementSize = 1
 
+    // const heights = generateHeightmap(15, 15)
+    const heights = heights2
     const [ref] = useHeightfield(
         () => ({
             args: [
-                generateHeights(sizeX, sizeY),
+                heights,
                 {
                     elementSize,
                 },
@@ -207,10 +215,11 @@ function MyMesh() {
 
 function App() {
 
-    const heights = generateHeightmap(15, 15)
+
+    //
 
     return (
-        <Canvas style={{background: '#272730'}} camera={{position: [4, 9, 4], fov: 55}}>
+        <Canvas style={{background: '#272730'}} camera={{position: [4, 14, 3], fov: 55}}>
             <Controls/>
             <ambientLight intensity={0.2}/>
             <directionalLight position={[0, 5, 0]} intensity={4}/>
@@ -218,10 +227,10 @@ function App() {
             {/*<HeightMap/>*/}
 
             <Physics>
-                <Spheres rows={4} columns={4} spread={2} />
-                <Debug color="black" scale={1.0}>
+                <Spheres rows={4} columns={4} spread={2}/>
+                {/*<Debug color="black" scale={1.0}>*/}
                     <MyMesh/>
-                </Debug>
+                {/*</Debug>*/}
             </Physics>
         </Canvas>
     )
