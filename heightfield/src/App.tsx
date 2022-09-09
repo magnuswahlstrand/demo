@@ -1,8 +1,9 @@
 import {Canvas, extend, useFrame, useThree} from "@react-three/fiber";
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
-import {useEffect, useRef} from "react";
-import {BufferGeometry, Float32BufferAttribute} from "three";
+import {useEffect, useMemo, useRef} from "react";
+import {BufferGeometry, Color, Float32BufferAttribute, InstancedMesh, Mesh} from "three";
 import niceColors from 'nice-color-palettes'
+import {Debug, Physics, useHeightfield, useSphere} from '@react-three/cannon'
 
 extend({OrbitControls})
 
@@ -84,29 +85,35 @@ const verticesC = new Float32Array([
 ]);
 
 
+function generateHeights(sizeX: number, sizeY: number) {
+    var heights: number[][] = [];
+    for (var i = 0; i < sizeX; i++) {
+        heights.push([]);
+        for (var j = 0; j < sizeY; j++) {
+
+            var height = Math.cos(i / sizeX * Math.PI * 2) * Math.cos(j / sizeY * Math.PI * 2) + 2;
+            if (i === 0 || i === sizeX - 1 || j === 0 || j === sizeY - 1)
+                height = 3;
+            heights[i].push(height);
+        }
+    }
+    return heights;
+}
+
+const sizeX = 15
+const sizeY = 15
+
 function H2(): JSX.Element {
     const ref = useRef<BufferGeometry>(null)
 
     useEffect(() => {
         if (!ref.current) return
 
-        var heights: number[][] = [];
+
+        var heights = generateHeights(sizeX, sizeY);
 
         const dx = 1
         const dy = 1
-        const sizeX = 15
-        const sizeY = 15
-
-        for (var i = 0; i < sizeX; i++) {
-            heights.push([]);
-            for (var j = 0; j < sizeY; j++) {
-
-                var height = Math.cos(i / sizeX * Math.PI * 2) * Math.cos(j / sizeY * Math.PI * 2) + 2;
-                if (i === 0 || i === sizeX - 1 || j === 0 || j === sizeY - 1)
-                    height = 3;
-                heights[i].push(height);
-            }
-        }
 
         const vertices = heights.flatMap(
             (row, i) =>
@@ -121,7 +128,7 @@ function H2(): JSX.Element {
                 const stride = heights[i].length
                 const index = i * stride + j
                 indices.push(index, index + stride, index + 1)
-                indices.push(index + 1, index + stride, index + stride + 1 )
+                indices.push(index + 1, index + stride, index + stride + 1)
             }
         }
 
@@ -138,6 +145,66 @@ function H2(): JSX.Element {
     return <bufferGeometry ref={ref}/>
 }
 
+function Spheres({ columns, rows, spread }: { columns: number; rows: number; spread: number }): JSX.Element {
+    const number = rows * columns
+    const [ref] = useSphere(
+        (index) => ({
+            args: [0.2],
+            mass: 1,
+            position: [
+                ((index % columns) - (columns - 1) / 2) * spread,
+                2.0,
+                (Math.floor(index / columns) - (rows - 1) / 2) * spread,
+            ],
+        }),
+        useRef<InstancedMesh>(null),
+    )
+    const colors = useMemo(() => {
+        const array = new Float32Array(number * 3)
+        const color = new Color()
+        for (let i = 0; i < number; i++)
+            color
+                .set(niceColors[17][Math.floor(Math.random() * 5)])
+                .convertSRGBToLinear()
+                .toArray(array, i * 3)
+        return array
+    }, [number])
+
+    return (
+        <instancedMesh ref={ref} castShadow receiveShadow args={[undefined, undefined, number]}>
+            <sphereBufferGeometry args={[0.2, 16, 16]}>
+                <instancedBufferAttribute attach="attributes-color" args={[colors, 3]} />
+            </sphereBufferGeometry>
+            <meshPhongMaterial vertexColors />
+        </instancedMesh>
+    )
+}
+
+function MyMesh() {
+    const rotation: [number, number, number] = [-Math.PI / 2, 0, 0];
+    let position: [number, number, number] = [-7, -3, 7];
+    const elementSize = 1
+
+    const [ref] = useHeightfield(
+        () => ({
+            args: [
+                generateHeights(sizeX, sizeY),
+                {
+                    elementSize,
+                },
+            ],
+            position,
+            rotation,
+        }),
+        useRef<Mesh>(null),
+    )
+    return <mesh ref={ref} castShadow receiveShadow rotation={rotation} position={position}>
+        <meshPhongMaterial color={niceColors[17][4]} wireframe={false}/>
+        <H2/>
+        {/*<HeightmapGeometry heights={heights} elementSize={(128) / 128}/>*/}
+    </mesh>;
+}
+
 function App() {
 
     const heights = generateHeightmap(15, 15)
@@ -149,11 +216,13 @@ function App() {
             <directionalLight position={[0, 5, 0]} intensity={4}/>
             <axesHelper args={[5]}/>
             {/*<HeightMap/>*/}
-            <mesh castShadow receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-                <meshPhongMaterial color={niceColors[17][4]} wireframe={false}/>
-                <H2/>
-                {/*<HeightmapGeometry heights={heights} elementSize={(128) / 128}/>*/}
-            </mesh>
+
+            <Physics>
+                <Spheres rows={4} columns={4} spread={2} />
+                <Debug color="black" scale={1.0}>
+                    <MyMesh/>
+                </Debug>
+            </Physics>
         </Canvas>
     )
 }
