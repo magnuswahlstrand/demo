@@ -3,7 +3,7 @@ import {Sphere, Tube} from "@react-three/drei";
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 
 import {Canvas, extend, useFrame, useThree} from "@react-three/fiber";
-import {CatmullRomCurve3, Mesh, Vector3} from "three";
+import {CatmullRomCurve3, LineCurve3, Mesh, Vector3, CubicBezierCurve3} from "three";
 import {Physics, RigidBody} from "@react-three/rapier";
 import * as _ from "lodash";
 
@@ -30,16 +30,72 @@ function TubeScene() {
     // Inspired by curve example from https://threejs.org/docs/#api/en/geometries/TubeGeometry
     const path = React.useMemo(() => {
 
-
-        const f = (x:number) => x**2
-        let x = _.range(-1,0.5,0.1);
+        const f = (x: number) => x ** 2
+        let x = _.range(-1, 0.5, 0.1);
         const curve3D = x.map((x) => new Vector3(x, f(x), 0).multiplyScalar(scale))
         return new CatmullRomCurve3(curve3D);
     }, [])
 
     return (
         <Tube args={[path, 100, radius]} position={[4, -6, 0]}>
-            <meshPhongMaterial color="#f3f3f3"
+            <meshPhongMaterial color="#ffffff"
+                               opacity={0.5}
+                               transparent={true}
+                               refractRatio={0.5}
+                               wireframe={false}
+            />
+        </Tube>
+    )
+}
+
+function TubeStraightScene() {
+    const radius = 0.5
+    const scale = 4
+
+    // Inspired by curve example from https://threejs.org/docs/#api/en/geometries/TubeGeometry
+    const path = React.useMemo(() => {
+        const v1 = new Vector3(1, 0, 0).multiplyScalar(scale)
+        const v2 = new Vector3(0, 0.5, 0).multiplyScalar(scale)
+        return new LineCurve3(v1, v2);
+    }, [])
+
+    return (
+        // <Tube args={[path, 100, radius]} position={[4, -6, 0]}>
+        <Tube args={[path, 100, radius, 40]} position={[0,-5,0]}>
+            <meshPhongMaterial color="#ffffff"
+                               opacity={0.5}
+                               transparent={true}
+                               refractRatio={0.5}
+                               wireframe={false}
+            />
+        </Tube>
+    )
+}
+function TubeBezierScene() {
+    const radius = 0.5
+    const scale = 4
+
+    // Inspired by curve example from https://threejs.org/docs/#api/en/geometries/TubeGeometry
+    const path = React.useMemo(() => {
+        const curve = new CubicBezierCurve3(
+            new Vector3( 10, 0, 0 ),
+            new Vector3( 10, 5, 0 ),
+            new Vector3( 0.0, 5, 0 ),
+            new Vector3( 0, 10, 0 )
+        );
+
+
+
+        return curve
+    }, [])
+
+    return (
+        // <Tube args={[path, 100, radius]} position={[4, -6, 0]}>
+        <Tube args={[path, 100, radius, 40]} position={[0,-15,0]}>
+            <meshPhongMaterial color="#ffffff"
+                               opacity={0.5}
+                               transparent={true}
+                               refractRatio={0.5}
                                wireframe={false}
             />
         </Tube>
@@ -61,14 +117,14 @@ function Scene() {
     const ref = useTurntable()
 
     return <Suspense>
-        <Physics gravity={[0,-9.8,0]}>
-            <group ref={ref} position={[0,5,0]}>
+        <Physics gravity={[0, -9.8, 0]}>
+            <group ref={ref} position={[0, 5, 0]}>
 
                 <RigidBody colliders={"trimesh"} type={"fixed"}>
-                    <TubeScene/>
+                    <TubeBezierScene/>
                 </RigidBody>
 
-                <RigidBody colliders={"hull"}>
+                <RigidBody colliders={"hull"} linearDamping={0.9}>
                     <Sphere args={[0.3]}>
                         <meshStandardMaterial color="white"/>
                     </Sphere>
@@ -80,7 +136,7 @@ function Scene() {
 
 const App = () => {
     return (
-        <Canvas >
+        <Canvas>
             <Controls/>
             <ambientLight intensity={0.2}/>
             <directionalLight position={[0, 5, 0]} intensity={4} color={"green"}/>
