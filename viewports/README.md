@@ -7,7 +7,7 @@
 * [x] Add title
 * [x] Handle responsive content order
 * [x] Add wire button
-* [ ] Fix canvas scroll bug
-* [ ] Write texts
+* [x] Fix canvas scroll bug
+* [x] Write texts
 * [ ] Solve ignored ts issues `{/*@ts-ignore*/}`
 * [ ] Github and Twitter information

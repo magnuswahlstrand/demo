@@ -6,3 +6,7 @@
 .canvas {
     position: fixed !important;
 }
+
+a {
+    text-decoration: underline;
+}
