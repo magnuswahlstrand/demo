@@ -16,12 +16,12 @@ function Lights() {
 }
 
 interface ShapeView {
-    trackingRef: React.MutableRefObject<HTMLElement>
+    trackingRef: React.RefObject<HTMLElement>
     wireframe: boolean
     children: ReactElement
 }
 
-function ShapeView({trackingRef, wireframe, children}: ShapeView) {
+function ShapeView({trackingRef, wireframe, children}: ShapeView): JSX.Element {
     const [hovered, setHover] = useState(false)
 
     const shape = React.cloneElement(
@@ -36,7 +36,10 @@ function ShapeView({trackingRef, wireframe, children}: ShapeView) {
         />
     )
 
-    return (<View track={trackingRef}>
+    {/*@ts-ignore*/}
+    return (<View track={trackingRef as React.MutableRefObject<HTMLElement>}>
+
+        <OrbitControls/>
         <color attach="background" args={['black']}/>
         <Lights/>
         <mesh>
@@ -46,7 +49,7 @@ function ShapeView({trackingRef, wireframe, children}: ShapeView) {
 }
 
 interface ContentDivProps {
-    children: ReactElement | string
+    children: React.ReactNode
     classes?: string
 }
 
@@ -63,9 +66,10 @@ function App() {
     const toggleWireframe = () => setWireframe((prev) => !prev)
 
     const container = useRef<HTMLElement>(null)
-    const view1 = useRef<HTMLDivElement>(null)
-    const view2 = useRef<HTMLDivElement>(null)
-    const view3 = useRef<HTMLDivElement>(null)
+    const view1 = useRef<HTMLElement>(null)
+    const view2 = useRef<HTMLElement>(null)
+    const view3 = useRef<HTMLElement>(null)
+
 
     return (
         <main ref={container} className={"container mx-auto h-full"}>
@@ -73,7 +77,11 @@ function App() {
 
                 {/* Layout */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 bg-stone-700  z-0 inline-grid">
-                    <div className="w-full p-6 text-3xl sm:text-5xl sm:col-span-2 font-bold text-center">R3F + Drei demo</div>
+                    <div className="w-full p-6 text-3xl sm:text-5xl sm:col-span-2 font-bold text-center">R3F + Drei
+                        demo
+                    </div>
+
+                    {/*@ts-ignore*/}
                     <div className="h-72 w-72 bg-black" ref={view1}/>
                     <Content>
                         Welcome to this small demo of react-three-fiber and react-three-drei!
@@ -86,16 +94,18 @@ function App() {
                     </Content>
 
                     <Content classes="hidden sm:block">2</Content>
+                    {/*@ts-ignore*/}
                     <div className="h-72 w-72 bg-black" ref={view2}/>
                     <Content classes="block sm:hidden">2</Content>
 
+                    {/*@ts-ignore*/}
                     <div className="h-72 w-72 bg-black" ref={view3}/>
                     <Content>3</Content>
                 </div>
 
                 {/* WebGL */}
-                <Canvas eventSource={container} className={"canvas z-40"}>
-                    <OrbitControls/>
+                {/*@ts-ignore*/}
+                <Canvas eventSource={container} className={"canvas z-40 pointer-events-none"}>
                     <ShapeView trackingRef={view1} wireframe={wireframe}>
                         <Dodecahedron args={[2, 0]}/>
                     </ShapeView>
