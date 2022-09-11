@@ -15,13 +15,13 @@ function Lights() {
     )
 }
 
-interface MyViewProps {
+interface ShapeView {
     trackingRef: React.MutableRefObject<HTMLElement>
     wireframe: boolean
     children: ReactElement
 }
 
-function ShapeView({trackingRef, wireframe, children}: MyViewProps) {
+function ShapeView({trackingRef, wireframe, children}: ShapeView) {
     const [hovered, setHover] = useState(false)
 
     const shape = React.cloneElement(
@@ -45,30 +45,55 @@ function ShapeView({trackingRef, wireframe, children}: MyViewProps) {
     </View>)
 }
 
+interface ContentDivProps {
+    children: ReactElement | string
+    classes?: string
+}
+
+function Content({children, classes}: ContentDivProps) {
+    return (<div className={`h-72 w-72 z-50 p-5 text-xl ${classes}`}>
+        {children}
+    </div>)
+}
+
+
 function App() {
+    const [wireframe, setWireframe] = useState(false);
+
+    const toggleWireframe = () => setWireframe((prev) => !prev)
+
     const container = useRef<HTMLElement>(null)
     const view1 = useRef<HTMLDivElement>(null)
     const view2 = useRef<HTMLDivElement>(null)
     const view3 = useRef<HTMLDivElement>(null)
-    const [wireframe, setWireframe] = useState(false);
-
-    console.log(wireframe)
 
     return (
         <main ref={container} className={"container mx-auto h-full"}>
             <div className="flex flex-row justify-center text-white">
 
-                <div className="grid grid-cols-1 place-items-end sm:grid-cols-2 bg-stone-700  z-0 inline-grid">
-                    <div className="h-48 w-48 view1  z-0 place-self-start" ref={view1}/>
-                    <div className="h-48 w-48 z-50 place-self-start">Some text here</div>
-                    <div className="h-48 w-48 z-50">More text here
-                        <button className={"bg-blue-900"} onClick={() => setWireframe((prev) => !prev)}>Show
-                            wireframe</button>
-                    </div>
-                    <div className="h-48 w-48 view2 z-0" ref={view2}/>
-                    <div className="h-48 w-48 view1 z-0" ref={view3}/>
-                    <div className="h-48 w-48 z-50">Some text here</div>
+                {/* Layout */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 bg-stone-700  z-0 inline-grid">
+                    <div className="w-full p-6 text-3xl sm:text-5xl sm:col-span-2 font-bold text-center">R3F + Drei demo</div>
+                    <div className="h-72 w-72 bg-black" ref={view1}/>
+                    <Content>
+                        Welcome to this small demo of react-three-fiber and react-three-drei!
+
+                        <button
+                            className={"bg-stone-200 p-2 border border-white rounded-md text-black font-bold"}
+                            onClick={toggleWireframe}>
+                            {wireframe ? "Hide" : "Show"} wireframe
+                        </button>
+                    </Content>
+
+                    <Content classes="hidden sm:block">2</Content>
+                    <div className="h-72 w-72 bg-black" ref={view2}/>
+                    <Content classes="block sm:hidden">2</Content>
+
+                    <div className="h-72 w-72 bg-black" ref={view3}/>
+                    <Content>3</Content>
                 </div>
+
+                {/* WebGL */}
                 <Canvas eventSource={container} className={"canvas z-40"}>
                     <OrbitControls/>
                     <ShapeView trackingRef={view1} wireframe={wireframe}>

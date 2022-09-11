@@ -3,7 +3,9 @@
 
 ### TODO
 * [x] Fix center bug
+* [x] Fix hover/touch controls bug
+* [ ] Handle content orders
+* [ ] Add title
 * [ ] Fix canvas scroll bug
-* [ ] Fix hover/touch controls bug
 * [ ] Write texts
 * [ ] Add wire button
