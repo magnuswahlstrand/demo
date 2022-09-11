@@ -1,6 +1,6 @@
 import React, {ReactElement, useRef, useState} from "react";
 
-import {Canvas, ThreeEvent} from "@react-three/fiber";
+import {Canvas, ThreeEvent, useFrame} from "@react-three/fiber";
 import {Dodecahedron, OrbitControls, RoundedBox, Torus, View} from "@react-three/drei";
 
 // https://codesandbox.io/s/v5i9wl?file=/src/App.js:1194-1211
@@ -22,6 +22,7 @@ interface ShapeView {
 }
 
 function ShapeView({trackingRef, wireframe, children}: ShapeView): JSX.Element {
+    const groupRef = useRef<any>();
     const [hovered, setHover] = useState(false)
 
     const shape = React.cloneElement(
@@ -36,15 +37,24 @@ function ShapeView({trackingRef, wireframe, children}: ShapeView): JSX.Element {
         />
     )
 
-    {/*@ts-ignore*/}
-    return (<View track={trackingRef as React.MutableRefObject<HTMLElement>}>
+    useFrame(() => {
+        if (!groupRef.current) return
 
-        <OrbitControls/>
-        <color attach="background" args={['black']}/>
-        <Lights/>
-        <mesh>
-            {shape}
-        </mesh>
+        groupRef.current.rotation.x += 0.001
+        groupRef.current.rotation.y += 0.001
+        groupRef.current.rotation.z += 0.001
+    })
+
+    // @ts-ignore
+    return (<View track={trackingRef as React.MutableRefObject<HTMLElement>}>
+        <OrbitControls enableZoom={false}/>
+        <group ref={groupRef}>
+            <color attach="background" args={['black']}/>
+            <Lights/>
+            <mesh onClick={() => console.log('clicked')}>
+                {shape}
+            </mesh>
+        </group>
     </View>)
 }
 
@@ -53,7 +63,7 @@ interface ContentDivProps {
     classes?: string
 }
 
-function Content({children, classes}: ContentDivProps) {
+function Content({children, classes = ""}: ContentDivProps) {
     return (<div className={`h-72 w-72 z-50 p-5 text-xl ${classes}`}>
         {children}
     </div>)

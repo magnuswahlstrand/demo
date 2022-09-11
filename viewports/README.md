@@ -5,9 +5,9 @@
 * [x] Fix center bug
 * [x] Fix hover/touch controls bug
 * [x] Add title
-* [ ] Handle content orders
+* [x] Handle responsive content order
+* [x] Add wire button
 * [ ] Fix canvas scroll bug
 * [ ] Write texts
-* [ ] Add wire button
-* [ ] Remove {/*@ts-ignore*/}
+* [ ] Solve ignored ts issues `{/*@ts-ignore*/}`
 * [ ] Github and Twitter information
