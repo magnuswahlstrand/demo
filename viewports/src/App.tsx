@@ -2,6 +2,7 @@ import React, {ReactElement, useRef, useState} from "react";
 
 import {Canvas, ThreeEvent, useFrame} from "@react-three/fiber";
 import {Dodecahedron, RoundedBox, Torus, View} from "@react-three/drei";
+import {FaGithub, FaTwitter} from 'react-icons/fa';
 
 // @ts-ignore
 import colors from "nice-color-palettes/200"
@@ -96,8 +97,7 @@ function App() {
 
                 {/* Layout */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 bg-stone-700  z-0 inline-grid">
-                    <div className="w-full p-6 text-3xl sm:text-5xl sm:col-span-2 font-bold text-center">Reactive Demo
-                    </div>
+                    <div className="w-full p-6 text-3xl sm:text-5xl sm:col-span-2 font-bold text-center">Reactive Demo</div>
 
                     {/*@ts-ignore*/}
                     <div className="h-72 w-72 bg-black" ref={view1}/>
@@ -133,6 +133,12 @@ function App() {
                         </button>
                         </div>
                     </Content>
+
+
+                    <div className="w-full p-6 text-3xl sm:text-5xl sm:col-span-2 flex flex-row justify-center space-x-8">
+                        <a href="https://twitter.com/Wahlstra"><FaTwitter /></a>
+                        <a href="https://github.com/magnuswahlstrand/demo/tree/main/viewports"><FaGithub /></a>
+                    </div>
                 </div>
 
                 {/* WebGL */}
