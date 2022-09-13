@@ -33,11 +33,18 @@ html, body, #root, .App {
     padding-right: 10%;
 }
 
-section:nth-child(even)
+
+section
 {
-    justify-content: flex-end;
+    justify-content: center;
 }
 
+@media screen and (min-width: 512px) {
+    section:nth-child(even)
+    {
+        justify-content: flex-end;
+    }
+}
 
 .container {
     position: relative;

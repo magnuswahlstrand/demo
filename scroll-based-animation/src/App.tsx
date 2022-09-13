@@ -42,7 +42,6 @@ const makeParticles = (n: number, pageHeight: number) => {
 
 interface ShapeProps {
     innerRef: MutableRefObject<Mesh | undefined>
-    position: [number, number, number]
 }
 
 function useGradientTexture() {
@@ -52,29 +51,29 @@ function useGradientTexture() {
     });
 }
 
-function TorusShape({position, innerRef}: ShapeProps) {
+function TorusShape({innerRef}: ShapeProps) {
     const gradientTexture = useGradientTexture();
 
 
-    return (<Torus ref={innerRef} position={position} args={[1, 0.4, 16, 60]} scale={1.5}>
+    return (<Torus ref={innerRef} args={[1, 0.4, 16, 60]}>
         <meshToonMaterial color={"white"} gradientMap={gradientTexture}/>
     </Torus>);
 }
 
-function ConeShape({position, innerRef}: ShapeProps) {
+function ConeShape({innerRef}: ShapeProps) {
     const gradientTexture = useGradientTexture();
 
-    return <Cone ref={innerRef} position={position} args={[1, 2, 32]} scale={1.5}>
+    return <Cone ref={innerRef} args={[1, 2, 32]}>
         <meshToonMaterial color={"white"} gradientMap={gradientTexture}/>
     </Cone>;
 }
 
-function TorusKnotShape({position, innerRef}: ShapeProps) {
+function TorusKnotShape({innerRef}: ShapeProps) {
     const gradientTexture = useGradientTexture();
 
 
     return (
-        <TorusKnot ref={innerRef} position={position} args={[0.8, 0.35, 100, 16]} scale={1.5}>
+        <TorusKnot ref={innerRef} args={[0.8, 0.35, 100, 16]}>
             <meshToonMaterial color={"white"} gradientMap={gradientTexture}/>
         </TorusKnot>
     )
@@ -95,21 +94,32 @@ function Scene() {
     const groupRef = useRef<Group>(null)
 
     const {viewport} = useThree()
+    console.log("viewport", viewport)
 
-    const pos: [number, number, number][] = [
+    const isWide = window.matchMedia('(min-width: 512px)').matches
+    const narrowOffset = 1.6
+    const pos: [number, number, number][] = isWide ? [
         [4, 0, 0],
         [-4, -viewport.height, 0],
         [4, -viewport.height * 2, 0],
+    ] : [
+        [0, 0 - narrowOffset, 0],
+        [0, -viewport.height - narrowOffset, 0],
+        [0, -viewport.height * 2 - narrowOffset, 0],
     ]
+
+    const scale = isWide ? 1.5 : 0.9
+    console.log("isWide", isWide)
+
 
     // TODO: use useSprings ?
     const springs = [useSpring(() => ({
         rotation: [0, 0, 0],
         config: {easing: easings.easeInOutQuad, duration: 500}
-    }), []),useSpring(() => ({
+    }), []), useSpring(() => ({
         rotation: [0, 0, 0],
         config: {easing: easings.easeInOutQuad, duration: 500}
-    }), []),useSpring(() => ({
+    }), []), useSpring(() => ({
         rotation: [0, 0, 0],
         config: {easing: easings.easeInOutQuad, duration: 500}
     }), [])]
@@ -170,14 +180,17 @@ function Scene() {
       react to scroll by using useScroll! */}
         <Scroll>
             <group ref={groupRef}>
-                <a.group {...springs[0][0]} position={pos[0]}>
-                    <TorusShape innerRef={ref1} position={[0, 0, 0]}/>
+                {/*@ts-ignore*/}
+                <a.group {...springs[0][0]} position={pos[0]} scale={scale}>
+                    <TorusShape innerRef={ref1}/>
                 </a.group>
-                <a.group {...springs[1][0]} position={pos[1]}>
-                    <ConeShape innerRef={ref2} position={[0, 0, 0]}/>
+                {/*@ts-ignore*/}
+                <a.group {...springs[1][0]} position={pos[1]} scale={scale}>
+                    <ConeShape innerRef={ref2}/>
                 </a.group>
-                <a.group {...springs[2][0]} position={pos[2]}>
-                    <TorusKnotShape innerRef={ref3} position={[0, 0, 0]}/>
+                {/*@ts-ignore*/}
+                <a.group {...springs[2][0]} position={pos[2]} scale={scale}>
+                    <TorusKnotShape innerRef={ref3}/>
                 </a.group>
 
                 <Points positions={positionA}>
@@ -189,6 +202,7 @@ function Scene() {
                 </Points>
             </group>
         </Scroll>
+        {/*@ts-ignore*/}
         <Scroll html style={{width: '100%'}}>
             <div>
                 <section className="section">
