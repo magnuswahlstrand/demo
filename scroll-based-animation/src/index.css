@@ -19,8 +19,7 @@ html, body, #root, .App {
     outline: none;
 }
 
-.section
-{
+.section {
     display: flex;
     align-items: center;
     height: 100vh;
@@ -34,15 +33,14 @@ html, body, #root, .App {
 }
 
 
-section
-{
-    justify-content: center;
+section:nth-child(even) {
+    justify-content: flex-end;
 }
 
-@media screen and (min-width: 512px) {
-    section:nth-child(even)
-    {
-        justify-content: flex-end;
+
+@media screen and (max-width: 512px) {
+    section {
+        justify-content: center;
     }
 }
 
