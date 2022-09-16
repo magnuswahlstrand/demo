@@ -28,6 +28,7 @@
     "@fontsource/open-sans": "^4.5.11",
     "@mantine/core": "^5.1.1",
     "@mantine/form": "^5.1.1",
+    "@react-three/flex": "^1.0.0",
     "@types/react": "^18.0.17",
     "astro-auto-import": "^0.1.2",
     "lodash": "^4.17.21",

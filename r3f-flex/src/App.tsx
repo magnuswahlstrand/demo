@@ -1,5 +1,5 @@
 import {Box, Flex} from '@react-three/flex'
-import {Canvas, useFrame} from "@react-three/fiber";
+import {Canvas, useFrame, useThree} from "@react-three/fiber";
 import {Group, Vector3} from "three";
 import React, {useEffect, useRef} from "react";
 import {Sphere, Text3D, TorusKnot} from "@react-three/drei";
@@ -21,8 +21,8 @@ const Layout = () => {
     </Box>))
 
     const vec = new Vector3()
-    useFrame(() => {
-        console.log(state.top)
+
+    useFrame(({size}) => {
         group.current.position.lerp(vec.set(0, state.top, 0), 0.1)
     })
 
@@ -65,7 +65,7 @@ function App() {
 
     return (
         <>
-            <Canvas onPointerMove={null}>
+            <Canvas>
                 <ambientLight intensity={0.2}/>
                 <directionalLight position={[2, 2, 0]} intensity={1}/>
                 {/*<OrbitControls/>*/}
@@ -75,7 +75,7 @@ function App() {
             </Canvas>
             <div className={"debug"}>{state.top}</div>
             <div className="scrollArea" ref={scrollArea} onScroll={onScroll}>
-                <div style={{height: `${state.pages * 100}vh`}} />
+                <div style={{height: `${state.pages * 100}vh`}}/>
             </div>
 
         </>
