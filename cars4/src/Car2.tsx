@@ -1,23 +1,44 @@
 import {useControlContext} from "./GlobalContext";
 import {useRef, useState} from "react";
-import {CapsuleCollider, RigidBody, RigidBodyApi, useRapier} from "@react-three/rapier";
+import {CapsuleCollider, CoefficientCombineRule, RigidBody, RigidBodyApi} from "@react-three/rapier";
 import {useFrame} from "@react-three/fiber";
 import * as THREE from "three";
-import {useControls} from 'leva'
+import {folder, useControls} from 'leva'
 
 export const Car2 = () => {
-    const {velocity, angularVelocity} = useControls(
-        {
-            velocity: {value: 10, min: 1, max: 20, step: 1},
-            angularVelocity: {value: 3, min: 1, max: 10, step: 1},
-        })
+    const ref = useRef<RigidBodyApi>(null);
 
+    const {
+        vAcceleration: acc,
+        vMax,
+        aVelocity: angularVelocity,
+        friction,
+    } = useControls(
+        {
+            velocity: folder({
+                vAcceleration: {value: 5, min: 1, max: 20, step: 0.5},
+                vMax: {value: 10, min: 1, max: 15, step: 1},
+                vDampening: {
+                    value: 1.0, min: 0.5, max: 10, step: 0.5,
+                    onChange: (value) => {
+                        ref.current?.setLinearDamping(value)
+                    }
+                }
+            }),
+            angular: folder({
+                aVelocity: {value: 2, min: 1, max: 5, step: 0.1},
+                aDampening: {
+                    value: 0, min: 0.0, max: 5, step: 0.1, onChange: (value) => {
+                        ref.current?.setAngularDamping(value)
+                    }
+                },
+            }),
+            friction: {value: 0.5, min: 0.0, max: 10, step: 0.5}
+        })
     const [colliding, setColliding] = useState(new Set());
     const {controls} = useControlContext()
-    const ref = useRef<RigidBodyApi>(null);
     // const { world, rigidBodyStates, physicsOptions, rigidBodyEvents } =
     //     useRapier();
-    const rapier = useRapier();
     //
     // console.log(world)
     // console.log(physicsOptions)
@@ -27,59 +48,52 @@ export const Car2 = () => {
     useFrame(({clock}) => {
         if (!ref.current || !controls.current) return
 
-        // ref.current.setAngvel(new THREE.Vector3(0, 3, 0))
-        // console.log(ref.current.rotation().y*Math.PI/2)
-        // console.log(controls.controls.current.down)
-        // if(controls.controls.current)
         let dAV = 0
         let dV = 0
-        dV += controls.current.up ? velocity : 0
-        dV += controls.current.down ? -velocity : 0
+        dV += controls.current.up ? acc : 0
+        dV += controls.current.down ? -acc : 0
         dAV += controls.current.left ? angularVelocity : 0
         dAV += controls.current.right ? -angularVelocity : 0
 
         // TODO: Reuse vector v
-        ref.current.setAngvel(new THREE.Vector3(0, dAV, 0))
+        const dAVV = new THREE.Vector3(0, dAV, 0)
+
+        ref.current.setAngvel(dAVV)
         // TODO: refactor?
         if (colliding.size > 0) {
-            ref.current.setLinvel(new THREE.Vector3(dV, ref.current.linvel().y, 0).applyQuaternion(ref.current.rotation()))
+            const v = ref.current.linvel()
+            const vy = v.y
+            v.y = 0
+
+            // Add dV
+            const dVV = new THREE.Vector3(dV, 0, 0).applyQuaternion(ref.current.rotation())
+            v.add(dVV)
+            v.clampLength(0, vMax)
+
+            // Return vy
+            v.y = vy
+            ref.current.setLinvel(v)
         }
-        // forward velocity
-        // ref.current.setLinvel(new THREE.Vector3(3, 0, 0).applyAxisAngle(yAxis, ref.current.rotation().y))
-        // if(controls.current.up) {
-        //     v += 3
-        // }
-        // if(controls.current.up) {
-        //     v += 3
-        // }
-        // ref.current.setAngvel(new THREE.Vector3(0, 1, 0))
-        // const v = new THREE.Vector3(3, 0, 0);
-        // const yAxis = new THREE.Vector3(0, 1, 0)
-        // console.log(ref.current.rotation().y)
-        // ref.current.setLinvel(v.applyAxisAngle(yAxis, ref.current.rotation().y))
-        // TODO: Do this somewwhere else
-        ref.current.setEnabledRotations(false, true, false)
     })
 
 
     // console.log(rapier)
     // console.log(colliding)
-    if (ref.current) console.log(ref.current.collider)
+    if (ref.current) console.log(ref.current.raw().collider(0).friction())
     // console.log(ref.current)
 
     return <RigidBody
+        enabledRotations={[false, true, false]}
+        userData={{id: "car2"}}
         ref={ref}
-        linearDamping={0.5}
-        name="playar"
-        position={[-3, 2, 0]} colliders={false}
+        // linearDamping={linearDampening}
+        // angularDamping={angularDampening}
+        position={[-3, 4, 0]} colliders={false}
         onCollisionEnter={(payload) => {
-            // TODO: Ask community how to check for ground collision. This is ugly hack, and most likely error prone
-            // https://stackoverflow.com/questions/58806883/how-to-use-set-with-reacts-usestate
             setColliding(prev => new Set(prev.add(payload.target.handle)))
         }}
         onCollisionExit={(payload) => {
             setColliding(prev => new Set([...prev].filter(x => x !== payload.target.handle)))
-            console.log('Collision at exit position 2', payload)
         }}
 
     >
@@ -88,13 +102,9 @@ export const Car2 = () => {
             <meshPhysicalMaterial color="orange"/>
         </mesh>
         <CapsuleCollider
+            restitutionCombineRule={CoefficientCombineRule.Min}
+            friction={friction}
             args={[0.5, 0.5]}
-            onCollisionEnter={payload => {
-                console.log(payload)
-            }}
-            onCollisionExit={payload => {
-                console.log(payload)
-            }}
         />
     </RigidBody>
 }
