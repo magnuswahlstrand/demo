@@ -6,6 +6,7 @@ import {Triplet} from "@react-three/cannon";
 import {Car2} from "./Car2";
 
 export let initialPosition = new THREE.Vector3(12, 12, -12);
+// export let initialPosition = new THREE.Vector3(0, 12, 0);
 let gravity: Triplet = [0, -9.82*1, 0];
 
 function Plane() {

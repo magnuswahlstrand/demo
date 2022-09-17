@@ -1,25 +1,39 @@
 import {useControlContext} from "./GlobalContext";
 import {useRef, useState} from "react";
-import {CapsuleCollider, CoefficientCombineRule, RigidBody, RigidBodyApi} from "@react-three/rapier";
+import {
+    CapsuleCollider,
+    CoefficientCombineRule,
+    ColliderApi,
+    RigidBody,
+    RigidBodyApi,
+    useRapier
+} from "@react-three/rapier";
 import {useFrame} from "@react-three/fiber";
 import * as THREE from "three";
 import {folder, useControls} from 'leva'
 
+const defaultVals = {
+    vAcc: 2,
+    vMax: 10,
+    vDampening: 1.0,
+    friction: 1.0,
+}
+
 export const Car2 = () => {
     const ref = useRef<RigidBodyApi>(null);
+    const ref2 = useRef<ColliderApi>(null);
 
     const {
         vAcceleration: acc,
         vMax,
         aVelocity: angularVelocity,
-        friction,
     } = useControls(
         {
             velocity: folder({
-                vAcceleration: {value: 5, min: 1, max: 20, step: 0.5},
-                vMax: {value: 10, min: 1, max: 15, step: 1},
+                vAcceleration: {value: defaultVals.vAcc, min: 1, max: 20, step: 0.5},
+                vMax: {value: defaultVals.vMax, min: 1, max: 15, step: 1},
                 vDampening: {
-                    value: 1.0, min: 0.5, max: 10, step: 0.5,
+                    value: defaultVals.vDampening, min: 0.5, max: 10, step: 0.5,
                     onChange: (value) => {
                         ref.current?.setLinearDamping(value)
                     }
@@ -33,16 +47,12 @@ export const Car2 = () => {
                     }
                 },
             }),
-            friction: {value: 0.5, min: 0.0, max: 10, step: 0.5}
+            friction: {value: defaultVals.friction, min: 0.0, max: 10, step: 0.5,  onChange: (value) => {
+                    ref.current?.raw().collider(0).setFriction(value);
+                }}
         })
     const [colliding, setColliding] = useState(new Set());
     const {controls} = useControlContext()
-    // const { world, rigidBodyStates, physicsOptions, rigidBodyEvents } =
-    //     useRapier();
-    //
-    // console.log(world)
-    // console.log(physicsOptions)
-    // console.log(rigidBodyStates)
 
     // https://github.com/pmndrs/react-three-rapier/blob/main/demo/src/kinematics/Kinematics.tsx
     useFrame(({clock}) => {
@@ -77,18 +87,12 @@ export const Car2 = () => {
     })
 
 
-    // console.log(rapier)
-    // console.log(colliding)
     if (ref.current) console.log(ref.current.raw().collider(0).friction())
-    // console.log(ref.current)
 
     return <RigidBody
         enabledRotations={[false, true, false]}
-        userData={{id: "car2"}}
-        ref={ref}
-        // linearDamping={linearDampening}
-        // angularDamping={angularDampening}
         position={[-3, 4, 0]} colliders={false}
+        ref={ref}
         onCollisionEnter={(payload) => {
             setColliding(prev => new Set(prev.add(payload.target.handle)))
         }}
@@ -97,13 +101,12 @@ export const Car2 = () => {
         }}
 
     >
-        <mesh castShadow receiveShadow name="player">
+        <mesh castShadow={true} receiveShadow={true} name="player">
             <capsuleGeometry args={[0.5, 1, 4, 8]}/>
             <meshPhysicalMaterial color="orange"/>
         </mesh>
         <CapsuleCollider
             restitutionCombineRule={CoefficientCombineRule.Min}
-            friction={friction}
             args={[0.5, 0.5]}
         />
     </RigidBody>

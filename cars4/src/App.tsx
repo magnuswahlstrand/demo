@@ -5,7 +5,6 @@ import * as THREE from "three";
 import {initialPosition, World} from "./World";
 import {AllowedKey, isKeyCode, keyMapping} from "./components/Controls";
 import {ControlContext, useControlContext} from "./GlobalContext";
-import { PerspectiveCamera } from '@react-three/drei'
 
 
 const CameraController = () => {
@@ -28,9 +27,6 @@ const CameraController = () => {
 };
 
 export function Inner() {
-    useThree(({camera}) => {
-        camera.position.copy(initialPosition)
-    });
 
     return (
         <>
@@ -124,7 +120,7 @@ export default function App() {
         <ControlContext.Provider value={obj}>
             <div className="h-full relative">
                 <Controller/>
-                <Canvas>
+                <Canvas camera={{position: initialPosition}}>
                     <CameraController/>
                     {/*<PerspectiveCamera makeDefault manual />*/}
                     <ControlContext.Provider value={obj}>
