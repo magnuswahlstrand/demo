@@ -1,9 +1,6 @@
-import {useLoader} from "@react-three/fiber";
-import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
-import {useMemo} from "react";
 import {useBox} from "@react-three/cannon";
 import {Mesh} from "three";
-import {useGLTF} from "@react-three/drei";
+import {useFBX, useGLTF} from "@react-three/drei";
 import {RigidBody} from "@react-three/rapier";
 
 type Props = {
@@ -23,7 +20,6 @@ function Box({model}: Props) {
 
     return <primitive object={model} ref={ref}/>
 }
-
 export default function Scene() {
     // const { nodes } = useGLTF('/models/world.glb')
     const gltf = useGLTF('/models/world.glb')
@@ -42,7 +38,7 @@ export default function Scene() {
             <RigidBody colliders="trimesh" type="fixed">
                 <mesh geometry={gltf.nodes.Cube.geometry} dispose={null}>
                     {/*<meshPhysicalMaterial color="lightblue" transmission={1} thickness={1} roughness={0} />*/}
-                    <meshPhysicalMaterial color="lightblue" />
+                    <meshPhysicalMaterial color="lightblue"/>
                 </mesh>
                 {/*{gltf.children.map((child, i) => (*/}
                 {/*    <mesh geometry={child} dispose={null}>*/}
