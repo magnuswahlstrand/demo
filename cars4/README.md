@@ -27,3 +27,9 @@
 ## Ideas
 * A mountain
 * 
+
+
+## Misc
+
+Used this tool to transform FBX to GLTF:
+FBX2glTF-darwin-x64

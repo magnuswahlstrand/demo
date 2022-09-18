@@ -3,7 +3,8 @@ import * as THREE from "three";
 import {Debug, Physics, RigidBody} from "@react-three/rapier";
 import {useFBX, useTexture} from "@react-three/drei";
 import {Triplet} from "@react-three/cannon";
-import {Car2} from "./Car2";
+import {Car2} from "../Car2";
+import {Model as CharacterMedium2} from './CharacterMedium2'
 
 export let initialPosition = new THREE.Vector3(12, 12, -12);
 // export let initialPosition = new THREE.Vector3(0, 12, 0);
@@ -54,8 +55,6 @@ function Character() {
 }
 
 
-import {Model as CharacterMedium} from './components/CharacterMedium'
-
 export function World() {
     return <Physics gravity={gravity}>
         <Plane/>
@@ -67,7 +66,8 @@ export function World() {
         {/*<Car/>*/}
         {/*<Scene/>*/}
         {/*<Character/>*/}
-        <CharacterMedium/>
+        {/*<CharacterMedium/>*/}
+        <CharacterMedium2 rotation={[0, Math.PI, 0]}/>
         <Ramp position={[5, -1, 0]} rotation={-Math.PI / 3}/>
         <Ramp position={[12, -1, 0]} rotation={Math.PI / 3}/>
         {/*</Debug>*/}

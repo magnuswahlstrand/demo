@@ -2,7 +2,7 @@ import {Canvas, useThree} from '@react-three/fiber'
 import {useEffect, useRef} from 'react';
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import * as THREE from "three";
-import {initialPosition, World} from "./World";
+import {initialPosition, World} from "./components/World";
 import {AllowedKey, isKeyCode, keyMapping} from "./components/Controls";
 import {ControlContext, useControlContext} from "./GlobalContext";
 
@@ -13,7 +13,7 @@ const CameraController = () => {
         () => {
             const controls = new OrbitControls(camera, gl.domElement);
 
-            controls.minDistance = 7;
+            controls.minDistance = 2;
             controls.maxDistance = 30;
             // controls.maxPolarAngle = Math.PI / 4    ;
             // controls.minPolarAngle = Math.PI / 4
@@ -32,7 +32,7 @@ export function Inner() {
         <>
             {/*<CameraController/>*/}
             {/*<planeGeometry/>*/}
-            {/*<ambientLight intensity={1}/>*/}
+            <ambientLight intensity={1}/>
             {/*<hemisphereLight intensity={3} args={['red', 'green']}/>*/}
             <spotLight intensity={2} position={[5, 10, 10]}/>
             <spotLight intensity={2} position={[-5, -10, 10]}/>
