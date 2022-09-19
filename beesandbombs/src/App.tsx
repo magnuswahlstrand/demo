@@ -22,13 +22,13 @@ const GREEN = color[3];
 
 
 const step1 = {scale: [1, 1, 1], immediate: true}
-const step2 = {scale: [1, 1, 1.5], config: tensionConfig}
-const step3 = {position: p0, color: GREEN, scale: [1, 1, 2], config: tensionConfig}
-const step4 = {position: p0, color: RED, scale: [1, 1, 3], config: tensionConfig}
+const step2 = {scale: [1, 1, 2], config: tensionConfig}
+const step3 = {position: p0, color: RED, scale: [1, 1, 3], config: tensionConfig}
+const step4 = {position: p0, color: RED, scale: [1, 1, 3]}
 
 const STATES = [
     {
-        L1: {...step1, position: p0, color: RED, onRest: () => console.log('rest', 1)},
+        L1: {...step1, position: p0, color: RED},
         T2: {...step1, position: [0, t, 0], color: YELLOW},
         P3: {...step1, position: [0, t, 0], color: GREEN},
         P4: {...step1, position: [0, t, 0], color: color[4]},
@@ -36,15 +36,15 @@ const STATES = [
         camera: {scale: 1, position:[0,0,0], immediate: true},
     },
     {
-        L1: {position: p0, color: YELLOW, step2, delay: delayColor, onRest: () => console.log('rest', 2)},
+        L1: {position: p0, color: YELLOW, step2, delay: delayColor},
         T2: {position: p0, color: YELLOW, step2},
-        P3: {scale: [1, 1, 1.5]},
-        P4: {scale: [1, 1, 1.5]},
+        P3: {scale: [1, 1, 2]},
+        P4: {scale: [1, 1, 2]},
 
-        camera: {scale: 1 / 3, position:[2,0.65,2],config: {duration: 3*3000}},
+        camera: {scale: 1 / 3, position:[2,0.65,2],config: {duration: 6000 }},
     },
     {
-        L1: {...step3, delay: delayColor, onRest: () => console.log('rest', 3)},
+        L1: {...step3, delay: delayColor},
         T2: {...step3, delay: delayColor},
         P3: {...step3},
         P4: {...step3, delay: 500},
@@ -52,7 +52,7 @@ const STATES = [
         camera: {},
     },
     {
-        L1: {...step4, onRest: () => console.log('rest', 4)},
+        L1: {...step4},
         T2: {...step4},
         P3: {...step4},
         P4: {...step4},
