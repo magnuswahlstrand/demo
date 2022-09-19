@@ -10,7 +10,7 @@ export interface TetrisProps {
     shape: THREE.Shape;
     color?: string;
     position?: [number, number, number];
-    scaleY?: [number, number, number];
+    scale?: [number, number, number];
 }
 
 export interface BlockProps extends Omit<TetrisProps, "shape"> {
