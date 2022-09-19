@@ -1,8 +1,8 @@
 // YourComponent.stories.js|jsx
 
 import {Setup} from "./Setup";
-import TetrisBlock from "../components/TetrisBlock";
 import {ComponentMeta, ComponentStory} from "@storybook/react";
+import L from "../components/L";
 
 interface SceneProps {
     rotX?: number;
@@ -11,14 +11,14 @@ interface SceneProps {
 }
 
 const TetrisBlockScene = ({rotX, rotY, rotZ}: SceneProps) => {
-    return <TetrisBlock/>
+    return <L/>
 }
 
 
 export default {
     title: 'Main/Tetris',
     component: TetrisBlockScene,
-    decorators: [(storyFn) => <Setup> {storyFn()}</Setup>],
+    decorators: [(storyFn) => <Setup cameraPosition={[1,10,1]}> {storyFn()}</Setup>],
 } as ComponentMeta<typeof TetrisBlockScene>;
 
 //👇 We create a “template” of how args map to rendering
