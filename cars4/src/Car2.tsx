@@ -1,16 +1,10 @@
 import {useControlContext} from "./GlobalContext";
 import {useRef, useState} from "react";
-import {
-    CapsuleCollider,
-    CoefficientCombineRule,
-    ColliderApi,
-    RigidBody,
-    RigidBodyApi,
-    useRapier
-} from "@react-three/rapier";
+import {CapsuleCollider, CoefficientCombineRule, ColliderApi, RigidBody, RigidBodyApi} from "@react-three/rapier";
 import {useFrame} from "@react-three/fiber";
 import * as THREE from "three";
 import {folder, useControls} from 'leva'
+import {Model as CharacterMedium2} from "./components/CharacterMedium2";
 
 const defaultVals = {
     vAcc: 2,
@@ -47,9 +41,11 @@ export const Car2 = () => {
                     }
                 },
             }),
-            friction: {value: defaultVals.friction, min: 0.0, max: 10, step: 0.5,  onChange: (value) => {
+            friction: {
+                value: defaultVals.friction, min: 0.0, max: 10, step: 0.5, onChange: (value) => {
                     ref.current?.raw().collider(0).setFriction(value);
-                }}
+                }
+            }
         })
     const [colliding, setColliding] = useState(new Set());
     const {controls} = useControlContext()
@@ -84,11 +80,10 @@ export const Car2 = () => {
             v.y = vy
             ref.current.setLinvel(v)
         }
+        console.log(ref.current.linvel().length())
     })
 
-
-    if (ref.current) console.log(ref.current.raw().collider(0).friction())
-
+    const isGrounded = colliding.size > 0
     return <RigidBody
         enabledRotations={[false, true, false]}
         position={[-3, 4, 0]} colliders={false}
@@ -101,10 +96,13 @@ export const Car2 = () => {
         }}
 
     >
-        <mesh castShadow={true} receiveShadow={true} name="player">
-            <capsuleGeometry args={[0.5, 1, 4, 8]}/>
-            <meshPhysicalMaterial color="orange"/>
-        </mesh>
+        <CharacterMedium2 rotation={[0, Math.PI / 2, 0]}
+                          action={!isGrounded && (ref.current?.linvel().length() ?? 0 < 0.3) ? "running" : "idle"}
+        />
+        {/*<mesh castShadow={true} receiveShadow={true} name="player">*/}
+        {/*    <capsuleGeometry args={[0.5, 1, 4, 8]}/>*/}
+        {/*    <meshPhysicalMaterial color="orange"/>*/}
+        {/*</mesh>*/}
         <CapsuleCollider
             restitutionCombineRule={CoefficientCombineRule.Min}
             args={[0.5, 0.5]}

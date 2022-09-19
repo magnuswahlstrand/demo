@@ -30,17 +30,30 @@ const run = "Root|Run";
 const idle = "Root|Idle";
 const jump = "Root|Jump";
 
-export function Model(props: JSX.IntrinsicElements['group']) {
+export function Model(props: JSX.IntrinsicElements['group'] & { action: "running" | "idle" | "jumping" }) {
+    let translatedAction: string;
+    switch (props.action) {
+        case "running":
+            translatedAction = run;
+            break;
+        case "idle":
+            translatedAction = idle;
+            break
+        case "jumping":
+            translatedAction = jump;
+            break
+    }
     const {nodes, materials} = useGLTF('/models/characterMedium.gltf') as GLTFResult
     let texture = useTexture('models/animated-characters-2/Skins/skaterMaleA.png')
     const {ref, actions} = loadAnimations();
 
-    const blendDuration = 0.2;
-    const [selectedAction, setSelectedAction] = useState(idle);
+    const blendDuration = 0.5;
+    // const [selectedAction, setSelectedAction] = useState(idle);
     useEffect(() => {
-        actions[selectedAction]?.reset().fadeIn(blendDuration).play()
-        return () => void actions[selectedAction]?.fadeOut(blendDuration)
-    }, [selectedAction])
+        console.log("action", translatedAction);
+        actions[translatedAction]?.reset().fadeIn(blendDuration).play()
+        return () => void actions[translatedAction]?.fadeOut(blendDuration)
+    }, [translatedAction])
 
     return (
         <group {...props} dispose={null} ref={ref}>

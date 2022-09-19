@@ -67,7 +67,6 @@ export function World() {
         {/*<Scene/>*/}
         {/*<Character/>*/}
         {/*<CharacterMedium/>*/}
-        <CharacterMedium2 rotation={[0, Math.PI, 0]}/>
         <Ramp position={[5, -1, 0]} rotation={-Math.PI / 3}/>
         <Ramp position={[12, -1, 0]} rotation={Math.PI / 3}/>
         {/*</Debug>*/}
