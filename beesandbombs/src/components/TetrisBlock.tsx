@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import {Extrude} from "@react-three/drei";
 import React from "react";
+import {animated} from '@react-spring/three';
 
 const extrudeSettings = {steps: 2, depth: 1, bevelEnabled: false};
 const SIDE = 1;
@@ -15,11 +16,14 @@ export interface BlockProps extends Omit<TetrisProps, "shape"> {
 
 }
 
+const AnimatedExtrude = animated(Extrude);
+
 function TetrisBlock({shape, color = 'red', position = [0, 0, 0]}: TetrisProps) {
+    console.log(color)
     return (
         <>
-            <Extrude args={[shape, extrudeSettings]} position={position}
-                     rotation={[Math.PI / 2, 0, 0]}
+            <AnimatedExtrude args={[shape, extrudeSettings]} position={position}
+                             rotation={[Math.PI / 2, 0, 0]}
             >
                 {/*<meshPhysicalMaterial*/}
                 {/*    color="#3E64FF"*/}
@@ -31,8 +35,8 @@ function TetrisBlock({shape, color = 'red', position = [0, 0, 0]}: TetrisProps) 
                 {/*    ior={1.25}*/}
                 {/*    attenuationDistance={0}*/}
                 {/*/>*/}
-                <meshStandardMaterial color={color}/>
-            </Extrude>
+                <animated.meshStandardMaterial color={color}/>
+            </AnimatedExtrude>
         </>
     );
 }
