@@ -10,6 +10,7 @@ export interface TetrisProps {
     shape: THREE.Shape;
     color?: string;
     position?: [number, number, number];
+    scaleY?: [number, number, number];
 }
 
 export interface BlockProps extends Omit<TetrisProps, "shape"> {
@@ -18,11 +19,11 @@ export interface BlockProps extends Omit<TetrisProps, "shape"> {
 
 const AnimatedExtrude = animated(Extrude);
 
-function TetrisBlock({shape, color = 'red', position = [0, 0, 0]}: TetrisProps) {
-    console.log(color)
+function TetrisBlock({shape, color = 'red', position = [0, 0, 0], scale = [1, 1, 1]}: TetrisProps) {
     return (
         <>
             <AnimatedExtrude args={[shape, extrudeSettings]} position={position}
+                             scale={scale}
                              rotation={[Math.PI / 2, 0, 0]}
             >
                 {/*<meshPhysicalMaterial*/}

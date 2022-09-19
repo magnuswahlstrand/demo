@@ -5,71 +5,76 @@ import React from "react";
 import colors from "nice-color-palettes";
 import {CameraAnimation, initialCamera} from "./components/CameraAnimation";
 import {useAnimationState} from "./hooks/useAnimationState";
-import {useSpring} from '@react-spring/three';
+import {a, useSpring} from '@react-spring/three';
 
 const color = colors[21 * 4];
 
-const top = 20;
+const t = 20;
 
 const delayColor = (key: string) => (key === 'color' ? 700 : 0)
+const tensionScale = (key: string) => (key === 'scale' ? (170 / 4) : 170)
+
+const p0 = [0, 0, 0];
+const RED = color[0];
+const YELLOW = color[1];
+const GREEN = color[3];
+
+
+const step1 = {scale: [1, 1, 1], immediate: true}
+const step2 = {scale: [1, 1, 1.5], config: {tension: 170 / 4}}
+const step3 = {position: p0, color: GREEN, scale: [1, 1, 2], config: {tension: 170 / 4}}
+const step4 = {position: p0, color: RED, scale: [1, 1, 3], config: {tension: 170 / 4}}
 
 const STATES = [
     {
-        L: {position: [0, 0, 0], color: color[0]},
-        T2: {position: [0, top, 0], color: color[1]},
-        P3: {position: [0, top, 0], color: color[3]},
-        P4: {position: [0, top, 0], color: color[4]},
+        L1: {...step1, position: p0, color: RED,},
+        T2: {...step1, position: [0, t, 0], color: YELLOW},
+        P3: {...step1, position: [0, t, 0], color: GREEN},
+        P4: {...step1, position: [0, t, 0], color: color[4]},
+
+        camera: {scale: 1, immediate: true},
     },
     {
-        L: {position: [0, 0, 0], color:color[1], delay: delayColor},
-        T2: {position: [0, 0, 0], color: color[1]},
-        P3: {position: [0, top, 0], color: color[3]},
-        P4: {position: [0, top, 0], color: color[4]},
+        L1: {position: p0, color: YELLOW, step2, delay: delayColor},
+        T2: {position: p0, color: YELLOW, step2},
+        P3: {scale: [1, 1, 1.5]},
+        P4: {scale: [1, 1, 1.5]},
+
+        camera: {scale: 1 / 3, config: {duration: 3000}},
     },
     {
-        L: {position: [0, 0, 0], color: color[3], delay: delayColor},
-        T2: {position: [0, 0, 0], color: color[3], delay: delayColor},
-        P3: {position: [0, 0, 0], color: color[3]},
-        P4: {position: [0, top, 0], color: color[4]},
+        L1: {...step3, delay: delayColor},
+        T2: {...step3, delay: delayColor},
+        P3: {...step3},
+        P4: {...step3, delay: 500},
+
+        camera: {},
     },
     {
-        L: {position: [0, 0, 0], color: color[4]},
-        T2: {position: [0, 0, 0], color: color[4]},
-        P3: {position: [0, 0, 0], color: color[4]},
-        P4: {position: [0, 0, 0], color: color[4]},
+        L1: {...step4},
+        T2: {...step4},
+        P3: {...step4},
+        P4: {...step4},
+
+        camera: {},
     },
-    // {
-    //     I: {
-    //         delay: (key) => (key === 'color' ? 500 : 0),
-    //         position: [0, 0, 10 * SIDE],
-    //         color: colors.purple,
-    //     }
-    // },
-    // {
-    //     I: {
-    //         delay: (key) => (key === 'color' ? 500 : 100),
-    //         position: [0, 0, 0],
-    //         color: colors.purple,
-    //     }
-    // },
-    // {
-    //     I: {
-    //         delay: (key) => (key === 'color' ? 500 : 0),
-    //         position: [0, 0, SIDE],
-    //         color: colors.purple,
-    //     },
-    // },
 ];
+
 
 function Scene() {
     const state = useAnimationState()
-    const springI = useSpring(STATES[state]['L']);
+    console.log(STATES[state]['L1'])
+    // const {position} = useSpring({
+    //     from: {position: [8, 8, 8]},
+    //     to: {position: [0, 0, 0]},
+    // });
+    const camera = useSpring(STATES[state]['camera']);
+    const springI = useSpring(STATES[state]['L1']);
     const springT2 = useSpring(STATES[state]['T2']);
     const springP3 = useSpring(STATES[state]['P3']);
     const springP4 = useSpring(STATES[state]['P4']);
-    console.log(state)
 
-    return <group>
+    return <a.group {...camera}>
         <group position={[1, 1, 0]}>
             <L {...springI}/>
         </group>
@@ -87,7 +92,7 @@ function Scene() {
         {/*<T2 position={} color={color[2]}/>*/}
 
         {/*<P4 position={[0, 1, 0]} color={color[4]}/>*/}
-    </group>;
+    </a.group>;
 }
 
 export default function App() {

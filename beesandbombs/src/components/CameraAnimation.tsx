@@ -2,7 +2,7 @@ import {Vector3} from "three";
 import {useFrame} from "@react-three/fiber";
 import React from "react";
 
-export const initialCamera = new Vector3(10, 10, 10)
+export const initialCamera = new Vector3(12, 12, 12)
 const target = new Vector3().copy(initialCamera).multiplyScalar(3)
 export const CameraAnimation = () => {
     useFrame(state => {
