@@ -1,6 +1,6 @@
 import React from 'react';
 
-const STEP_COUNT = 3;
+const STEP_COUNT = 4;
 
 export function useAnimationState() {
     // const [step] = useState(null);
@@ -16,13 +16,18 @@ export function useAnimationState() {
             // setStep((state) => (state + 1) % STEP_COUNT)
             // t = setTimeout(myFunction, ((step + 1) % STEP_COUNT === 0 ? 100 : 3000));
 
-            let   delay = 3000;
-            if(ref.current.step === 0) {
-                delay = 10
+            let   delay: number
+            switch (ref.current.step) {
+                case 0:
+                    delay = 10;
+                    break
+                case 3:
+                    delay = 1500;
+                    break
+                default:
+                    delay = 3000;
             }
-            if(ref.current.step === 3) {
-                delay = 200
-            }
+
             // const nextInvocation = ref.current.step === 0 || ref.current.step === 3 ? 100 : 3000
             console.log(`set to ${ref.current.step}, will be called again in ${delay}`);
             setTimeout(loop, delay);
