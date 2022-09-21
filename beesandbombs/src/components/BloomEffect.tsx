@@ -13,6 +13,7 @@ export const BloomEffect = () => {
         [size]
     );
 
+
     return (
         <EffectsComposer
             multisamping={4}
@@ -20,7 +21,9 @@ export const BloomEffect = () => {
             disableGamma
             disableRenderPass
         >
+            {/* @ts-ignore */}
             <renderPass attachArray="passes" scene={scene} camera={camera}/>
+            {/* @ts-ignore */}
             <unrealBloomPass attachArray="passes" args={[aspect, 0.3, 1, 0]}/>
         </EffectsComposer>
     );

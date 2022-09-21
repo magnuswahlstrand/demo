@@ -36,6 +36,8 @@ function TetrisBlock({shape, color = 'red', position = [0, 0, 0], scale = [1, 1,
                 {/*    ior={1.25}*/}
                 {/*    attenuationDistance={0}*/}
                 {/*/>*/}
+
+                {/* @ts-ignore */}
                 <animated.meshStandardMaterial color={color}/>
             </AnimatedExtrude>
         </>
