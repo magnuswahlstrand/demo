@@ -1,4 +1,4 @@
-import {Canvas} from '@react-three/fiber';
+import {Canvas, useFrame} from '@react-three/fiber';
 import {Box, Line, OrbitControls} from "@react-three/drei";
 import {animated, config, useChain, useSpring, useSpringRef, useTrail} from '@react-spring/three';
 import React from "react";
@@ -13,6 +13,16 @@ const points: [number, number, number][] = [
     [0, 0.5, -0.5],
     [0, -0.5, -0.5],
 ]
+
+const points2: [number, number, number][] = [
+    [0, -0.5, 0.5],
+    [0, 0.5, 0.5],
+    [0, 0.5, -0.5],
+    [0, -1.5, -0.5],
+    [0, -1.5, -1.5],
+    [0, -0.5, -1.5],
+    [0, -0.5, 0.5],
+].map(([x, y, z]) => [x, y+0.5, z+0.5])
 
 const AnimatedLine = animated(Line);
 const AnimatedBox = animated(Box);
@@ -37,10 +47,11 @@ function SquareLine({posX, delay}: { posX: number, delay: number }) {
 }
 
 
-const n = 12
 const offset = 0.202
 
 function Scene() {
+    const n = 12
+    const n2 = 6
 
     const groupRef = useSpringRef();
     const {rotY} = useSpring({
@@ -51,7 +62,9 @@ function Scene() {
 
     const items = [...Array(n)].map((v, i) => ({
         posX: offset * i - offset * n / 2,
-        delay: 15 * v,
+    }))
+    const items2 = [...Array(6)].map((v, i) => ({
+        posX: offset * i - offset * n2 / 2,
     }))
 
     const trailRef = useSpringRef();
@@ -60,7 +73,20 @@ function Scene() {
         to: {"rotation-x": -Math.PI / 2},
         from: {"rotation-x": 0},
         config: config.stiff,
+        pause:  true,
     })
+    const trail2Ref = useSpringRef();
+    const trail2 = useTrail(items2.length, {
+        ref: trail2Ref,
+        to: {"rotation-x": -Math.PI/2},
+        from: {"rotation-x": 0},
+        config: config.slow,
+        onRest: () => {
+            console.log("rest")
+            trail2Ref.start({"rotation-x": -Math.PI, delay: 1000})
+        }
+    })
+
 
     useChain([])
 
@@ -68,49 +94,42 @@ function Scene() {
         <animated.group
             rotation-y={rotY}
         >
-            {trail.map((props, i) => (
-                <AnimatedLine
-                    key={i}
-                    rotation={[0, 0, 0]}
-                    {...props}
-                    position={[items[i].posX, 0, 0]}
-                    points={points}
-                    lineWidth={1.5}
-                />
-            ))}
+            {/*{trail.map((props, i) => (*/}
+            {/*    <AnimatedLine*/}
+            {/*        key={i}*/}
+            {/*        rotation={[0, 0, 0]}*/}
+            {/*        {...props}*/}
+            {/*        position={[items[i].posX, 0, 0]}*/}
+            {/*        points={points}*/}
+            {/*        lineWidth={1.5}*/}
+            {/*    />*/}
+            {/*))}*/}
         </animated.group>
-
-        {/*{[...Array(n)].map((i, v) =>*/
-        }
-        {/*    <SquareLine key={v}*/
-        }
-        {/*                posX={offset * v - offset * n / 2}*/
-        }
-        {/*                delay={15 * v}*/
-        }
-        {/*    />)*/
-        }
-        {/*}*/
-        }
-        {/*{[...Array(n)].map((i, v) =>*/
-        }
-        {/*    <SquareLine key={v}*/
-        }
-        {/*                posX={offset * v - offset * n / 2}*/
-        }
-        {/*                delay={15 * v}*/
-        }
-        {/*    />)*/
-        }
-        {/*}*/
-        }
+        {trail2.map((props, i) => (
+            <AnimatedLine
+                key={i}
+                rotation={[0, 0, 0]}
+                {...props}
+                position={[items2[i].posX, 0, 0]}
+                points={points2}
+                color={"blue"}
+                lineWidth={2}
+            />
+        ))}
+        {/*{items2.map((v, i) => (<AnimatedLine*/}
+        {/*    position={[items[i].posX, 0, 0]}*/}
+        {/*    points={points2}*/}
+        {/*    color={"red"}*/}
+        {/*    lineWidth={4}*/}
+        {/*/>))}*/}
     </>
 }
 
 export default function App() {
     return (
         <Canvas dpr={window.devicePixelRatio} orthographic
-                camera={{zoom: 200, position: [10, 10 / Math.sqrt(2), 10 / Math.sqrt(2)]}}>
+                // Calculated by fair dice roll.
+                camera={{zoom: 100, position: [10, 8.27, 8.27]}}>
             <color attach="background" args={['white']}/>
             <pointLight position={[10, 10, 10]}/>
             <pointLight position={[-10, 10, 5]}/>
