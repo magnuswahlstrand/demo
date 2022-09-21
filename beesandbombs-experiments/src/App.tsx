@@ -1,6 +1,6 @@
 import {Canvas} from '@react-three/fiber';
-import {Line, OrbitControls} from "@react-three/drei";
-import {animated, config, useSpring, useSpringRef} from '@react-spring/three';
+import {Box, Line, OrbitControls} from "@react-three/drei";
+import {animated, config, useChain, useSpring, useSpringRef, useTrail} from '@react-spring/three';
 import React from "react";
 import {Vector3} from "three";
 
@@ -15,6 +15,7 @@ const points: [number, number, number][] = [
 ]
 
 const AnimatedLine = animated(Line);
+const AnimatedBox = animated(Box);
 
 function SquareLine({posX, delay}: { posX: number, delay: number }) {
     const s = useSpring({
@@ -32,20 +33,76 @@ function SquareLine({posX, delay}: { posX: number, delay: number }) {
         points={points}
         color={"black"}
         lineWidth={1.5}
-
     />;
 }
 
+
+const n = 12
+const offset = 0.202
+
 function Scene() {
-    const n = 12
-    // const n = 1
-    const offset = 0.202
+
+    const groupRef = useSpringRef();
+    const {rotY} = useSpring({
+        ref: groupRef,
+        "rotY": Math.PI,
+        from: {"rotY": 0},
+    })
+
+    const items = [...Array(n)].map((v, i) => ({
+        posX: offset * i - offset * n / 2,
+        delay: 15 * v,
+    }))
+
+    const trailRef = useSpringRef();
+    const trail = useTrail(items.length, {
+        ref: trailRef,
+        to: {"rotation-x": -Math.PI / 2},
+        from: {"rotation-x": 0},
+        config: config.stiff,
+    })
+
+    useChain([])
+
     return <>
-        {[...Array(n)].map((i, v) =>
-            <SquareLine key={v}
-                        posX={offset * v - offset * n / 2}
-                        delay={15 * v}
-            />)
+        <animated.group
+            rotation-y={rotY}
+        >
+            {trail.map((props, i) => (
+                <AnimatedLine
+                    key={i}
+                    rotation={[0, 0, 0]}
+                    {...props}
+                    position={[items[i].posX, 0, 0]}
+                    points={points}
+                    lineWidth={1.5}
+                />
+            ))}
+        </animated.group>
+
+        {/*{[...Array(n)].map((i, v) =>*/
+        }
+        {/*    <SquareLine key={v}*/
+        }
+        {/*                posX={offset * v - offset * n / 2}*/
+        }
+        {/*                delay={15 * v}*/
+        }
+        {/*    />)*/
+        }
+        {/*}*/
+        }
+        {/*{[...Array(n)].map((i, v) =>*/
+        }
+        {/*    <SquareLine key={v}*/
+        }
+        {/*                posX={offset * v - offset * n / 2}*/
+        }
+        {/*                delay={15 * v}*/
+        }
+        {/*    />)*/
+        }
+        {/*}*/
         }
     </>
 }
