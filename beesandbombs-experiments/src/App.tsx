@@ -3,7 +3,9 @@ import {Line, OrbitControls} from "@react-three/drei";
 import {animated, useSpring, useTrail} from '@react-spring/three';
 import React, {useState} from "react";
 
-const squarePoints: [number, number, number][] = [
+const AnimatedLine = animated(Line);
+
+const square: [number, number, number][] = [
     [0, -0.5, -0.5],
     [0, -0.5, 0.5],
     [0, 0.5, 0.5],
@@ -11,29 +13,23 @@ const squarePoints: [number, number, number][] = [
     [0, -0.5, -0.5],
 ]
 
-const twistedSquarePoints: [number, number, number][] = [
-    [0, -0.5, 0.5],
-    [0, 0.5, 0.5],
-    [0, 0.5, -0.5],
-    [0, -1.5, -0.5],
-    [0, -1.5, -1.5],
-    [0, -0.5, -1.5],
-    [0, -0.5, 0.5],
-].map(([x, y, z]) => [x, y + 0.5, z + 0.5])
+const twistedSquares: [number, number, number][] = [
+    [0, 0, 1],
+    [0, 1, 1],
+    [0, 1, 0],
+    [0, -1, 0],
+    [0, -1, -1],
+    [0, 0, -1],
+    [0, 0, 1],
+]
 
-const AnimatedLine = animated(Line);
+const OFFSET = 0.202
+const COUNT = 12
 
-const offset = 0.202
-const n = 12
-const n2 = n / 2
-
-const baseSquares = [...Array(n)].map((v, i) => ({
+const offsetArray = (offset: number, n: number) => [...Array(n)].map((v, i) => ({
     posX: offset * (i - (n - 1) / 2)
 }))
 
-const twistedSquares = [...Array(n2)].map((v, i) => ({
-    posX: offset * (i - (n2 - 1) / 2),
-}))
 
 interface StepProps {
     onComplete: () => void
@@ -41,7 +37,7 @@ interface StepProps {
 
 // Rotate each individual square 90 degrees
 function RotatingSquares({onComplete}: StepProps) {
-    const offsets = baseSquares
+    const offsets = offsetArray(OFFSET, COUNT)
     const trail = useTrail(offsets.length, {
         to: {"rotation-x": -Math.PI / 2},
         from: {"rotation-x": 0},
@@ -60,7 +56,7 @@ function RotatingSquares({onComplete}: StepProps) {
                 rotation={[0, 0, 0]}
                 {...props}
                 position={[offsets[i].posX, 0, 0]}
-                points={squarePoints}
+                points={square}
                 lineWidth={1.5}
             />
         ))}
@@ -69,7 +65,7 @@ function RotatingSquares({onComplete}: StepProps) {
 
 // Rotate all squares 180 degrees as a group
 function RotatingGroup({onComplete}: StepProps) {
-    const offsets = baseSquares
+    const offsets = offsetArray(OFFSET, COUNT)
     const {rotY} = useSpring({
         "rotY": -Math.PI,
         from: {"rotY": 0},
@@ -84,7 +80,7 @@ function RotatingGroup({onComplete}: StepProps) {
                 key={i}
                 rotation={[0, 0, 0]}
                 position={[offsets[i].posX, 0, 0]}
-                points={squarePoints}
+                points={square}
                 lineWidth={1.5}
             />
         ))}
@@ -94,7 +90,7 @@ function RotatingGroup({onComplete}: StepProps) {
 
 // Rotate each combined square 90 degrees
 function RotatingTwistedSquares({onComplete, rotFromX}: StepProps & { rotFromX: number }) {
-    const offsets = twistedSquares
+    const offsets = offsetArray(OFFSET, COUNT / 2)
     const trail = useTrail(offsets.length, {
         to: {"rotation-x": -rotFromX - Math.PI / 2},
         from: {"rotation-x": -rotFromX},
@@ -111,7 +107,7 @@ function RotatingTwistedSquares({onComplete, rotFromX}: StepProps & { rotFromX: 
                 rotation={[0, 0, 0]}
                 {...props}
                 position={[offsets[i].posX, 0, 0]}
-                points={twistedSquarePoints}
+                points={twistedSquares}
                 color={"black"}
                 lineWidth={1.5}
             />
