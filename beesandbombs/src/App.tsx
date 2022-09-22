@@ -9,7 +9,7 @@ import {BloomEffect} from "./components/BloomEffect";
 import {Vector3} from "three";
 
 const color = colors[21 * 4];
-export const initialCamera = new Vector3(5, 3, 5)
+export const initialCamera = new Vector3(5, 5, 5)
 
 const t = 20;
 
@@ -20,7 +20,7 @@ const RED = color[0];
 const YELLOW = color[1];
 const GREEN = color[3];
 
-const sharedConf = {tension: 170 / 2, precision: 0.001}
+const sharedConf = {tension: 170 / 2, precision: 0.01}
 
 const step1 = {immediate: true, config: sharedConf}
 const step2 = {config: sharedConf}
@@ -33,8 +33,6 @@ const STATES = [
         T2: {...step1, position: [0, t, 0], color: YELLOW},
         P3: {...step1, position: [0, t, 0], color: GREEN},
         P4: {...step1, position: [0, t, 0], color: color[4]},
-
-        camera: {scale: 1, inverseScale: [1, 1, 1], position: [0, 0, 0], immediate: true},
     },
     {
         L1: {...step2, position: p0, color: YELLOW, delay: delayColor},
@@ -42,7 +40,6 @@ const STATES = [
         P3: {...step2},
         P4: {...step2},
 
-        camera: {scale: 1 / 3, inverseScale: [1, 1, 3], position: [2, 0.65, 2], config: {duration: 6200}},
     },
     {
         L1: {...step3, delay: delayColor},
@@ -60,11 +57,22 @@ const STATES = [
 
 const cameraStates = [
     {scale: 1, inverseScale: [1, 1, 1], position: [0, 0, 0], immediate: true},
-    {scale: 1 / 3, inverseScale: [1, 1, 3], position: [2, 0.65, 2], config: {duration: 6200}}
+    {
+        scale: 1 / 3,
+        inverseScale: [1, 1, 3],
+        position: [2, 0.65, 2],
+        config: {duration: 7520},
+        from: {scale: 1, inverseScale: [1, 1, 1], position: [0, 0, 0]},
+        loop: true,
+    }
 ]
 
 function Scene() {
     const state = useAnimationState()
+    if(state == 0) {
+        console.timeEnd("render")
+        console.time("render")
+    }
 
     const camera = useSpring(state === 0 ? cameraStates[0] : cameraStates[1]);
     const springI = useSpring(STATES[state]['L1']);
@@ -93,8 +101,9 @@ function Scene() {
 }
 
 export default function App() {
+    console.time("render")
     return (
-        <Canvas dpr={window.devicePixelRatio} camera={{position: initialCamera}} >
+        <Canvas dpr={window.devicePixelRatio} camera={{position: initialCamera, zoom: 50}} orthographic>
             <color attach="background" args={['black']}/>
             <pointLight position={[10, 10, 10]}/>
             <pointLight position={[-10, 10, 5]}/>
