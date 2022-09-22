@@ -41,8 +41,7 @@ function RotatingSquares({onComplete}: StepProps) {
     const trail = useTrail(offsets.length, {
         to: {"rotation-x": -Math.PI / 2},
         from: {"rotation-x": 0},
-        config: {precision: 0.001, duration: 400},
-        // config: {...config.stiff, precision: 0.01},
+        config: {precision: 0.001},
         onRest: (_, w) => {
             if (w.springs["rotation-x"]._priority === offsets.length - 1) onComplete()
         },
@@ -94,7 +93,7 @@ function RotatingTwistedSquares({onComplete, rotFromX}: StepProps & { rotFromX: 
     const trail = useTrail(offsets.length, {
         to: {"rotation-x": -rotFromX - Math.PI / 2},
         from: {"rotation-x": -rotFromX},
-        config: {mass: 1, tension: 100, precision: 0.001, duration: 600},
+        config: {mass: 1, tension: 100, precision: 0.001},
         onRest: (_, w) => {
             if (w.springs["rotation-x"]._priority === offsets.length - 1) onComplete()
         },
