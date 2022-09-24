@@ -1,16 +1,18 @@
 import {Canvas, useFrame} from '@react-three/fiber';
 import {Line, OrbitControls} from "@react-three/drei";
-import React, {useMemo} from "react";
-import {Color, Line as THREELine} from "three";
+import React from "react";
+import {Color} from "three";
 import {LineGeometry} from "three/examples/jsm/lines/LineGeometry";
 
 
+// Line
 const nPoints = 200;
 const line = new Float32Array(nPoints * 3)
+const points = new Array(nPoints * 3).fill(0)
 
+// Colors
 const startColor = new Color("rgb(250,187,0)")
 const endColor = new Color("rgb(255,0,17)")
-
 const colors = new Array(nPoints).fill(0).map(
     (v, i) => new Color(startColor).lerp(endColor, 1 - i / nPoints)
 )
@@ -22,14 +24,7 @@ const Fz = 1 / 4
 const LineWidth = 50
 
 function Scene() {
-    const ref = React.useRef<THREELine>(null);
-    const [points] = useMemo(() => {
-        const points = []
-        for (let i = 0.0; i < nPoints; i++) {
-            points.push(0, 0, 0)
-        }
-        return [points]
-    }, [])
+    const ref = React.useRef<any>(null);
 
     useFrame(({clock}) => {
         if (!ref.current) return
@@ -59,21 +54,18 @@ function Scene() {
 }
 
 export default function App() {
+    const debug = false
     return (
         <Canvas dpr={window.devicePixelRatio} camera={{position: [10, 0, 0], zoom: 50}} orthographic>
             <color attach="background" args={['black']}/>
             <OrbitControls/>
-            {false && (
+            <Scene/>
+            {debug && (
                 <>
-                    <gridHelper
-                        args={[100, 100, "#a0ffa0", "#a0a0ff"]}
-                        position={[0, 0, 0]}
-                    />
+                    <gridHelper args={[100, 100, "#a0ffa0", "#a0a0ff"]} position={[0, 0, 0]}/>
                     <axesHelper args={[4]}/>
                 </>
             )}
-
-            <Scene/>
         </Canvas>
     );
 }
