@@ -1,0 +1,40 @@
+{
+  "name": "beesandbombs",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.31.1",
+    "@react-three/fiber": "^8.7.4",
+    "leva": "^0.9.31",
+    "maath": "^0.4.2",
+    "nice-color-palettes": "^3.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "three": "^0.144.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.19.1",
+    "@storybook/addon-actions": "^6.5.12",
+    "@storybook/addon-essentials": "^6.5.12",
+    "@storybook/addon-interactions": "^6.5.12",
+    "@storybook/addon-links": "^6.5.12",
+    "@storybook/builder-vite": "^0.2.2",
+    "@storybook/react": "^6.5.12",
+    "@storybook/testing-library": "^0.0.13",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "@types/three": "^0.144.0",
+    "@vitejs/plugin-react": "^2.1.0",
+    "babel-loader": "^8.2.5",
+    "typescript": "^4.6.4",
+    "vite": "^3.1.0"
+  }
+}

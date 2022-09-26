@@ -1,0 +1,11 @@
+Model Information:
+* title:	House Cat
+* source:	https://sketchfab.com/3d-models/house-cat-ebcf4173da6b459f99b750a8a6972b46
+* author:	Alexa Kruckenberg (https://sketchfab.com/AlexaKruckenberg)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "House Cat" (https://sketchfab.com/3d-models/house-cat-ebcf4173da6b459f99b750a8a6972b46) by Alexa Kruckenberg (https://sketchfab.com/AlexaKruckenberg) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
