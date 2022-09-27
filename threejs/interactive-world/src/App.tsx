@@ -2,15 +2,34 @@ import {Canvas} from '@react-three/fiber';
 import {OrbitControls, ScrollControls} from "@react-three/drei";
 import React from "react";
 import Bookcase from "./components/Bookcase";
+import {assign, createMachine} from "xstate";
+import {useMachine} from "@xstate/react";
 
 const color = 'rgb(250,246,200)'
 
-function BetterBookcase() {
-    return <Bookcase/>
+interface PlayerContext {
+    nBooks: number
 }
 
+const playerMachine = createMachine<PlayerContext>({
+    id: "book",
+    initial: "idle",
+    context: {
+        nBooks: 1,
+    },
+    states: {
+        "idle": {
+            on: {
+                INC: { actions: assign({ nBooks: ctx => ctx.nBooks + 1 }) }
+            }
+        },
+    }
+});
+
 function Scene() {
-    return <BetterBookcase/>
+    const [current, send] = useMachine(playerMachine);
+    console.log(current.context.nBooks)
+    return <Bookcase onClick={() => send('INC')} />
 }
 
 export default function App() {

@@ -38,10 +38,14 @@ export default function Model(props) {
 
             {books.map((book, index) => {
                 return <Book key={index}
-                             position={[book.pos*bookWidth+bookOffset, shelfHeight[book.shelf], 0]}
+                             position={[book.pos * bookWidth + bookOffset, shelfHeight[book.shelf], 0]}
                              flip={book.flip}
                              color={book.color}
-                             binder={book.binder}/>
+                             binder={book.binder}
+                             onComplete={() => {
+                                    console.log("book complete")
+                             }}
+                />
             })}
             <mesh geometry={nodes.Cube033.geometry} material={materials['BrownDark.049']}
                   rotation={[Math.PI / 2, 0, 0,]}/>
