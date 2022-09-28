@@ -10,7 +10,7 @@
     "xstate": "xstate typegen \"*.tsx\" --watch"
   },
   "dependencies": {
-    "@react-three/drei": "^9.31.1",
+    "@react-three/drei": "^9.32.3",
     "@react-three/fiber": "^8.7.4",
     "@xstate/cli": "^0.3.3",
     "@xstate/react": "^3.0.1",

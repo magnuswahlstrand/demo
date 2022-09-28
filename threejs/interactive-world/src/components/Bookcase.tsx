@@ -7,7 +7,6 @@ import {useGLTF} from '@react-three/drei'
 import Book from "./Book";
 import {Color} from "three";
 
-const shelvDistance = 0.55
 const shelfHeight = [
     0.45,
     0.98,
@@ -42,9 +41,6 @@ export default function Model(props) {
                              flip={book.flip}
                              color={book.color}
                              binder={book.binder}
-                             onComplete={() => {
-                                    console.log("book complete")
-                             }}
                 />
             })}
             <mesh geometry={nodes.Cube033.geometry} material={materials['BrownDark.049']}
