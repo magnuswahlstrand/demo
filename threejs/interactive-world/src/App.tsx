@@ -99,10 +99,6 @@ function CameraController() {
         if(left) {
             turnVector.applyAxisAngle(yAxis, 0.02)
         }
-
-        if(jump) {
-
-        }
         console.log()
     })
 
@@ -133,7 +129,6 @@ export default function App() {
                     {/*<OrbitControls/>*/}
                     <CameraController/>
                     <PointerLockControls/>
-
 
                     <Display/>
                     <PlayerCrossBow/>
