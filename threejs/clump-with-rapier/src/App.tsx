@@ -85,8 +85,6 @@ function Pointer({ vec = new Vector3() }: { vec: Vector3 }) {
         />
 
       </Sphere>
-
-
     </RigidBody>
   );
 }

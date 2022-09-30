@@ -1,4 +1,4 @@
-import { Float, KeyboardControls, OrbitControls, Sphere, useTexture } from "@react-three/drei";
+import { Float, KeyboardControls, OrbitControls, Plane, Sphere, useTexture } from "@react-three/drei";
 import React from "react";
 import * as THREE from "three";
 import * as RC from "render-composer";
@@ -82,7 +82,6 @@ const Scene = () => {
 };
 
 export default function App() {
-  console.time("render");
   return (
     // <Canvas shadows dpr={[1, 2]}>
 
