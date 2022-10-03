@@ -1,10 +1,18 @@
 import { OrbitControls, Plane, Sphere } from "@react-three/drei";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Debug, interactionGroups, Physics, RigidBody, RigidBodyApi } from "@react-three/rapier";
-import { Group, Vector2 } from "three";
-import Giant2 from "./components/Giant2";
+import {
+  Debug,
+  InstancedRigidBodies,
+  InstancedRigidBodyApi,
+  interactionGroups,
+  Physics,
+  RigidBody,
+  RigidBodyApi
+} from "@react-three/rapier";
+import { Euler, Group, Quaternion, Vector2, Vector3 } from "three";
 import { useControls } from "leva";
+import Giant2 from "./components/Giant2";
 
 function MyPlane() {
   const ref = useRef<RigidBodyApi>(null!);
@@ -40,45 +48,69 @@ let GROUP_BALL = 1;
 let GROUP_STATIC = 0;
 
 function ColliderBones({ start, length, angle }: { start: Vector2, length: number, angle: number }) {
-  const end = new Vector2(start.x + length * Math.cos(angle), start.y + length * Math.sin(angle));
 
-  const diff = new Vector2();
-  diff.subVectors(end, start);
+  // const diff = new Vector2();
+  // diff.subVectors(end, start);
 
-  console.log(diff);
-  console.log(diff.angle());
 
-  const numPoints = 10;
-  const boneLength = length / numPoints;
-  const points = new Array(numPoints).fill(0).map((_, index) => {
-    const x = lerp(start.x, end.x, index / numPoints);
-    const y = lerp(start.y, end.y, index / numPoints);
-    return new Vector2(x, y);
-  });
+  const COUNT = 10;
+  const boneLength = 2 * length / COUNT;
 
-  return <>
-    {points.map((point, index) => {
+  const rotations = Array.from({ length: COUNT }, (_, index) => [
+    Math.PI - Math.PI / 2, -angle, 0
+  ]);
 
-      return (
-        <RigidBody position={[point.x, point.y, 0]} key={index}
-                   collisionGroups={interactionGroups(GROUP_STATIC, GROUP_BALL)}>
-          <Plane rotation={[-Math.PI / 2, -diff.angle(), 0]} args={[boneLength, 0.1]}>
-            <meshBasicMaterial attach="material" color="red" />
-          </Plane>;
-        </RigidBody>
-      );
-    })}
-  </>;
+  // TODO: Return array instead
+  const pos = (index: number, angle: number, length: number) => {
+    const end = new Vector2(start.x + length * Math.cos(angle), start.y + length * Math.sin(angle));
+    const x = lerp(start.x, end.x, index / COUNT);
+    const y = lerp(start.y, end.y, index / COUNT);
+    return [x, y, 0];
+  };
+
+  const positions = Array.from({ length: COUNT }, (_, index) =>
+    pos(index, -angle, length)
+  );
+
+  console.log(positions);
+
+
+  const instancedApi = useRef<InstancedRigidBodyApi>(null);
+  useEffect(() => {
+    return () => {
+      console.log("something updated", angle);
+      const rotation = new Quaternion().setFromEuler(new Euler(...[Math.PI - Math.PI / 2, -angle, 0]));
+      instancedApi.current?.forEach((api, index) => {
+        const position = new Vector3(...pos(index, -angle, length));
+        api.setNextKinematicRotation(rotation);
+        api.setNextKinematicTranslation(position);
+      });
+    };
+  }, [angle, length]);
+
+
+  return (
+    <InstancedRigidBodies
+      ref={instancedApi}
+      positions={positions}
+      rotations={rotations}
+      collisionGroups={interactionGroups(GROUP_STATIC, GROUP_BALL)}
+      type={"kinematicPosition"}
+    >
+
+      <instancedMesh args={[undefined, undefined, COUNT]}>
+        <planeGeometry args={[boneLength, 0.1, 1, 1]} />
+        <meshBasicMaterial attach="material" color="red" />
+      </instancedMesh>
+    </InstancedRigidBodies>);
 }
 
 const Scene = () => {
-
   const {
-    RightX, RightY, RightLength, RightAngle
-    , LeftX, LeftY, LeftLength, LeftAngle
+    RightX, RightY, RightLength, RightAngle, LeftX, LeftY, LeftLength, LeftAngle
   } = useControls({
     RightX: { value: -0.5, step: 0.02 },
-    RightY: { value: 1.04, step: 0.02 },
+    RightY: { value: 1.14, step: 0.02 },
     RightLength: { value: 1.25, step: 0.02 },
     // RightAngle: { value: 4.42, step: 0.02 },
     RightAngle: { value: Math.PI, step: 0.02 },
@@ -90,13 +122,14 @@ const Scene = () => {
   });
 
   return (<>
-      <RigidBody colliders={"ball"} position={[0.5, 1.5, 0]} angularDamping={0.65} linearDamping={0.1}>
+      <RigidBody colliders={"ball"} position={[-0.5, 1.5, 0]} angularDamping={0.65} linearDamping={0.1}>
         <Sphere args={[0.1, 32, 32]} />
       </RigidBody>
-      <ColliderBones start={new Vector2(LeftX, LeftY)} length={LeftLength} angle={LeftAngle} />
+      {/*<ColliderBones start={new Vector2(LeftX, LeftY)} length={LeftLength} angle={LeftAngle} />*/}
 
       <ColliderBones start={new Vector2(RightX, RightY)} length={RightLength} angle={RightAngle} />
-      <Giant2 />
+      <Giant2 angle={RightAngle - Math.PI} />
+      <Plane args={[1, 1]} position={[0.5, 0.5, 0]} />
     </>
   );
 
@@ -104,14 +137,12 @@ const Scene = () => {
 
 export default function App() {
   return (
-    // <Canvas shadows dpr={[1, 2]}>
-
     <Canvas camera={{ position: [0, 0, 3] }}>
       <color attach="background" args={["#000000"]} />
       <ambientLight intensity={1} />
       <directionalLight intensity={2} position={[10, 10, 10]} color="white" />
       <Physics>
-        <Debug />
+        <Debug color={"lightgreen"} sleepColor={"lightgreen"} />
         <Scene />
       </Physics>
       <axesHelper args={[2]} />

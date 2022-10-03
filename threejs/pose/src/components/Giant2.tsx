@@ -28,9 +28,8 @@ type GLTFResult = GLTF & {
 type ActionName = "mixamo.com"
 type GLTFActions = Record<ActionName, THREE.AnimationAction>
 
-export function Model(props: JSX.IntrinsicElements["group"]) {
+export function Model(props: JSX.IntrinsicElements["group"] & {angle: number}) {
   const group = useRef<THREE.Group>();
-  const transform = useRef()
   const modelRef = useRef<SkinnedMesh>(null!);
   const skeletonRef = useRef<SkinnedMesh>(null!);
   // @ts-ignore
@@ -38,11 +37,11 @@ export function Model(props: JSX.IntrinsicElements["group"]) {
   const { actions } = useAnimations<GLTFActions>(animations, group);
   console.log(actions);
   useEffect(() => {
-    console.log(group.current)
-    // const action = actions["mixamo.com"];
-    // console.log(action);
-    // action.play();
-  }, []);
+    console.log(props.angle)
+
+    // @ts-ignore
+    modelRef.current?.skeleton.getBoneByName("mixamorigRightArm_017").rotation.set(-0.2 - props.angle, _y, _z);
+  }, [props.angle]);
 
   // mixamorigLeftShoulder_08
   // mixamorigLeftArm_09
@@ -76,7 +75,7 @@ export function Model(props: JSX.IntrinsicElements["group"]) {
     "x": 0,
     "y": 1.0137163400650024,
     "z": 0,
-    "_x": {value: 1.1297591592242358,step:0.1}, //1.2 -0.2, -1.8
+    "_x": {value: -0.2,step:0.1}, //1.2 -0.2, -1.8
     "_y": {value: -0.0625,step:0.1},
     "_z": {value: -0.013,step:0.1},
   });
@@ -92,7 +91,7 @@ export function Model(props: JSX.IntrinsicElements["group"]) {
 
     // // modelRef.current.skeleton.getBoneByName("mixamorigLeftArm_09").rotation.set(_x, _y, _z);
     // // modelRef.current.skeleton.getBoneByName("mixamorigLeftArm_09")?.position.set(x, y, z);
-    modelRef.current.skeleton.getBoneByName("mixamorigRightArm_017").rotation.set(_x, _y, _z);
+    // modelRef.current.skeleton.getBoneByName("mixamorigRightArm_017").rotation.set(_x, _y, _z);
     // modelRef.current.skeleton.getBoneByName("mixamorigRightArm_017")?.position.set(x, y, z);
     // modelRef.current.skeleton.getBoneByName("mixamorigLeftArm_09").rotation.y = Math.PI/2
     const bone2 = modelRef.current.skeleton.getBoneByName("mixamorigLeftShoulder_08");
