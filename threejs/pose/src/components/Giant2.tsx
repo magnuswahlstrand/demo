@@ -40,7 +40,7 @@ export function Model(props: JSX.IntrinsicElements["group"] & {angle: number}) {
     console.log(props.angle)
 
     // @ts-ignore
-    modelRef.current?.skeleton.getBoneByName("mixamorigRightArm_017").rotation.set(-0.2 - props.angle, _y, _z);
+    modelRef.current?.skeleton.getBoneByName("mixamorigRightArm_017").rotation.set( props.angle + Math.PI - 0.23, _y, _z);
   }, [props.angle]);
 
   // mixamorigLeftShoulder_08
