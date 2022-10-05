@@ -17,10 +17,8 @@ function App() {
         </mesh>
       </Example>
 
-      <Heading>Extra Examples</Heading>
-
-      <Example path="two" title="Example 2: The Exampling">
-        <Description>This is also a very simple example.</Description>
+      <Example path="clump" title="Clumping">
+        <Description>Move the cursor or click the screen to break the formation.</Description>
         <Clump />
       </Example>
     </Application>

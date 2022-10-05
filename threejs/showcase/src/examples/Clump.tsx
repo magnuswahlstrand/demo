@@ -1,5 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import { Environment, Sphere } from "@react-three/drei";
+import { Environment, PerspectiveCamera, Sphere } from "@react-three/drei";
 import React, { useRef } from "react";
 import { InstancedRigidBodies, InstancedRigidBodyApi, Physics, RigidBody, RigidBodyApi } from "@react-three/rapier";
 import { MathUtils, MeshStandardMaterial, Vector3 } from "three";
@@ -23,13 +23,10 @@ function Scene({ vec = new Vector3() }: { vec?: Vector3 }) {
   useFrame(({ clock }, delta) => {
     if (!api.current) return;
 
-    api.current.forEach((body, i) => {
+    api.current.forEach((body) => {
       vec.copy(body.translation());
-      vec.normalize().multiplyScalar(-40 * delta);
-      // body.addForce(vec);
-      // body.applyImpulse(vec);
+      vec.normalize().multiplyScalar(-80 * delta);
       body.applyImpulse(vec);
-      // body.applyImpulse(vec)
     });
   });
 
@@ -64,14 +61,10 @@ function Scene({ vec = new Vector3() }: { vec?: Vector3 }) {
 function Pointer({ vec = new Vector3() }: { vec?: Vector3 }) {
   const ref = useRef<RigidBodyApi>(null);
 
-
   useFrame(({ mouse, viewport }) => {
     if (!ref.current) return;
-    // vec.copy(ref.current.translation());
-    // vec.lerp([mouse.x, mouse.y, 0], 0.1);
-    // ref.current.setNextKinematicTranslation(vec.sub(ref.current.translation()));
-    const v = { x: mouse.x * viewport.width / 2, y: mouse.y * viewport.height / 2, z: 0 };
-    ref.current.setNextKinematicTranslation(ref.current.translation().lerp(v, 0.2));
+    vec.set(mouse.x * viewport.width / 2, mouse.y * viewport.height / 2, 0);
+    ref.current.setNextKinematicTranslation(ref.current.translation().lerp(vec, 0.2));
   });
 
   return (
@@ -92,10 +85,7 @@ function Pointer({ vec = new Vector3() }: { vec?: Vector3 }) {
 const Lights = () => {
   return (
     <>
-      <ambientLight intensity={0.25}  />
-      {/*<spotLight intensity={1} angle={0.2} penumbra={1} position={[30, 30, 30]} castShadow*/}
-      {/*           shadow-mapSize={[512, 512]} />*/}
-      {/*<directionalLight intensity={5} position={[-10, -10, -10]} color="purple" />*/}
+      <ambientLight intensity={0.25} />
     </>
   );
 };
@@ -103,12 +93,16 @@ const Lights = () => {
 const SceneWrapper = () => {
   return (<>
     <Lights />
-      <Physics gravity={[0, 2, 0]} iterations={10}>
-        <Scene />
-        <Pointer />
-      </Physics>
-      <Environment preset={"city"} />
-    </>);
-    };
+    <PerspectiveCamera
+      makeDefault
+      position={[0, 0, 15]}
+    />
+    <Physics gravity={[0, 2, 0]}>
+      <Scene />
+      <Pointer />
+    </Physics>
+    <Environment preset={"city"} />
+  </>);
+};
 
-    export default SceneWrapper;
+export default SceneWrapper;
