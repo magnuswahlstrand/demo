@@ -8,6 +8,7 @@ import RepeatingTetris from "./examples/RepeatingTetris/RepeatingTetris"
 import Bread from "./examples/Bread"
 /* r3f-stage provides a global stylesheet. Please import it in your application and remove any other global styles you may have defined. */
 import "r3f-stage/styles.css"
+import DotScreen from "./examples/DotScreen";
 
 function App() {
   return (
@@ -36,8 +37,13 @@ function App() {
       </Example>
 
       <Heading>3D Models</Heading>
-      <Example path="bread" title="bread">
+      <Example path="bread" title="Bread">
         <Bread />
+      </Example>
+
+      <Heading>Post processing</Heading>
+      <Example path="dots" title="Dot Screen">
+        <DotScreen />
       </Example>
 
     </Application>

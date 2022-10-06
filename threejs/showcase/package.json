@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-three/drei": "^9.32.3",
     "@react-three/fiber": "^8.7.4",
+    "@react-three/postprocessing": "^2.6.2",
     "@react-three/rapier": "^0.7.2",
     "@xstate/cli": "^0.3.3",
     "@xstate/react": "^3.0.1",
