@@ -28,6 +28,8 @@ function Bread() {
 function Scene() {
     return (
         <>
+            <color attach="background" args={['black']}/>
+            <directionalLight position={[0, 0, 10]} intensity={1}/>
             <PresentationControls
                 global
                 config={{mass: 1, tension: 100}}
@@ -48,8 +50,6 @@ export default function App() {
     console.time("render")
     return (
         <Canvas dpr={window.devicePixelRatio}>
-            <color attach="background" args={['black']}/>
-            <directionalLight position={[0, 0, 10]} intensity={1}/>
             <Scene/>
         </Canvas>
     );

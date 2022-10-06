@@ -1,8 +1,8 @@
 // Line
 import { Color } from "three";
 import { LineGeometry } from "three/examples/jsm/lines/LineGeometry";
-import { useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import React, { useRef } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
 import { Line, OrthographicCamera } from "@react-three/drei";
 
 const nPoints = 200;
@@ -43,6 +43,7 @@ function Scene() {
 
   return (
     <>
+      <color attach="background" args={["black"]} />
       <OrthographicCamera
         makeDefault
         zoom={50}

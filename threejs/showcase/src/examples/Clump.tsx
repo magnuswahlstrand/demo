@@ -1,8 +1,8 @@
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { Environment, PerspectiveCamera, Sphere } from "@react-three/drei";
 import React, { useRef } from "react";
 import { InstancedRigidBodies, InstancedRigidBodyApi, Physics, RigidBody, RigidBodyApi } from "@react-three/rapier";
-import { MathUtils, MeshStandardMaterial, Vector3 } from "three";
+import { Color, MathUtils, MeshStandardMaterial, Vector3 } from "three";
 
 
 const COUNT = 15;
@@ -92,6 +92,7 @@ const Lights = () => {
 
 const SceneWrapper = () => {
   return (<>
+    <color attach="background" args={["black"]} />
     <Lights />
     <PerspectiveCamera
       makeDefault

@@ -11,7 +11,7 @@ import {Vector3} from "three";
 const color = colors[21 * 4];
 export const initialCamera = new Vector3(5, 5, 5)
 
-const t = 20;
+const t = 25;
 
 const delayColor = (key: string) => (key === 'color' ? 700 : 0)
 
