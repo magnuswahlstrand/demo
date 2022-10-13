@@ -3,6 +3,7 @@ import { animated, useSpring, useTrail } from "@react-spring/three";
 import React, { useState } from "react";
 import { useThree } from "@react-three/fiber";
 import { Color } from "three";
+import { EffectComposer } from "@react-three/postprocessing";
 
 const AnimatedLine = animated(Line);
 
@@ -147,7 +148,10 @@ export default function App() {
         makeDefault
         position={[10, 8.27, 8.27]}
         zoom={100} />
-      <Scene />
+
+      <EffectComposer multisampling={2}>
+        <Scene />
+      </EffectComposer>
     </>
   );
 }

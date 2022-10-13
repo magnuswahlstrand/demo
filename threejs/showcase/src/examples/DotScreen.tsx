@@ -40,7 +40,7 @@ function Knot() {
   );
 }
 
-function Effects() {
+function Scene() {
   return (
     <>
       <OrthographicCamera makeDefault position={[0, 0, 10]} zoom={100} />
@@ -51,8 +51,7 @@ function Effects() {
         />
         <Knot />
       </EffectComposer>
-
     </>);
 }
 
-export default Effects;
+export default Scene;

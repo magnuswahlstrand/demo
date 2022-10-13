@@ -9,6 +9,8 @@ import Bread from "./examples/Bread"
 /* r3f-stage provides a global stylesheet. Please import it in your application and remove any other global styles you may have defined. */
 import "r3f-stage/styles.css"
 import DotScreen from "./examples/DotScreen";
+import Ascii from "./examples/Ascii";
+import WordCloud from "./examples/WordCloud";
 
 function App() {
   return (
@@ -36,14 +38,22 @@ function App() {
         <RotatingSquares />
       </Example>
 
-      <Heading>3D Models</Heading>
-      <Example path="bread" title="Bread">
-        <Bread />
-      </Example>
+      {/*<Heading>3D Models</Heading>*/}
+      {/*<Example path="bread" title="Bread">*/}
+      {/*  <Bread />*/}
+      {/*</Example>*/}
 
       <Heading>Post processing</Heading>
       <Example path="dots" title="Dot Screen">
         <DotScreen />
+      </Example>
+      <Example path="ascii" title="Ascii">
+        <Ascii />
+      </Example>
+
+      <Heading>Other</Heading>
+      <Example path="word-cloud" title="Word Cloud">
+        <WordCloud />
       </Example>
 
     </Application>

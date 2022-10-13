@@ -71,28 +71,34 @@ function Character({ geometry, position, color, width, height }: CharProps2) {
   const cutPosition: [number, number, number] = [position[0] + (width + 0.1) / 4, position[1] + (height + 0.1) / 2, position[2]];
 
   const [p1, setP1] = useState(false);
-  const [p2, setP2] = useState(false);
 
-  console.log(p1,p2);
+  if (!p1) {
+    return <mesh position={position} onClick={() => setP1(true)} geometry={geometry}>
+      <meshNormalMaterial />
+    </mesh>;
+  }
+
   return <>
-    <mesh position={position} onClick={() => setP1(true)}>
-      <Intersection>
-        <Brush a geometry={geometry} />
-        <Brush b position={cutOffset}>
-          <boxGeometry args={[(width + 0.1) / 2, height + 0.1, 1]} />
-        </Brush>
-      </Intersection>
-      <meshStandardMaterial color={p1 ? "hotpink" : color} />
-    </mesh>
-    <mesh position={position} onClick={() => setP2(true)} >
-      <Subtraction>
-        <Brush a geometry={geometry} />
-        <Brush b position={cutOffset}>
-          <boxGeometry args={[(width + 0.1) / 2, height + 0.1, 1]} />
-        </Brush>
-      </Subtraction>
-      <meshStandardMaterial color={p2 ?  "hotpink": "gray"} />
-    </mesh>
+    <group>
+      <mesh position={position}>
+        <Intersection>
+          <Brush a geometry={geometry} />
+          <Brush b position={cutOffset}>
+            <boxGeometry args={[(width + 0.1) / 2, height + 0.1, 1]} />
+          </Brush>
+        </Intersection>
+        <meshStandardMaterial color={color} />
+      </mesh>
+      <mesh position={position}>
+        <Subtraction>
+          <Brush a geometry={geometry} />
+          <Brush b position={cutOffset}>
+            <boxGeometry args={[(width + 0.1) / 2, height + 0.1, 1]} />
+          </Brush>
+        </Subtraction>
+        <meshStandardMaterial color={"hotpink"} />
+      </mesh>
+    </group>
     {/*<mesh position={cutPosition}>*/}
     {/*  <boxGeometry args={[(width + 0.1) / 2, height + 0.1, 1]} />*/}
     {/*  <meshStandardMaterial color={color} />*/}
@@ -135,11 +141,13 @@ export function Scene() {
   return <>
     {/*<MyText2 text={"Hello"} wireframe position={[0, 0, 1]} />*/}
     {offset.map((c, i) =>
-      <Character geometry={c.geometry}
-                 position={[c.offset, 0, 0]}
-                 color={colors[i]}
-                 width={c.width}
-                 height={c.height} />)
+      <Character
+        key={i}
+        geometry={c.geometry}
+        position={[c.offset, 0, 0]}
+        color={colors[i]}
+        width={c.width}
+        height={c.height} />)
     }
     <MovementSystem />;
   </>;
