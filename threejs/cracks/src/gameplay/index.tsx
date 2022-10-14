@@ -1,13 +1,13 @@
 import { Canvas } from "@react-three/fiber";
-import { Physics } from "@react-three/rapier";
-import { OrbitControls } from "@react-three/drei";
+import { Physics, RigidBody, RigidBodyApi } from "@react-three/rapier";
+import { Box, OrbitControls } from "@react-three/drei";
 import { MovementSystem } from "./systems/MovementSystem";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import fontJsonRaw from "./Roboto_Black_Regular.json?raw";
 import { Brush, Intersection, Subtraction } from "@react-three/csg";
-import { useMemo, useState } from "react";
-import { BufferGeometry } from "three";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { BufferGeometry, Vector3 } from "three";
 
 function Lights() {
   return <>
@@ -52,7 +52,7 @@ const textGeometryParams = {
   height: 0.4
 };
 
-const dispWord = "Hello World";
+const dispWord = "Click me!";
 
 const geometry = new TextGeometry(dispWord, textGeometryParams);
 
@@ -66,44 +66,61 @@ interface CharProps {
 
 type CharProps2 = Omit<CharProps, "offset"> & { position: [number, number, number], color: string };
 
-function Character({ geometry, position, color, width, height }: CharProps2) {
-  const cutOffset: [number, number, number] = [(width + 0.1) / 4, (height + 0.1) / 2, 0];
-  const cutPosition: [number, number, number] = [position[0] + (width + 0.1) / 4, position[1] + (height + 0.1) / 2, position[2]];
+function SplitCharacter(props: { position: [number, number, number], geometry: BufferGeometry, width: number, height: number, color: string }) {
+  const cutOffset: [number, number, number] = [0, (props.height) / 2, 0];
+  const cutArgs: [number, number, number] = [(props.width), props.height + 0.2, 1];
 
-  const [p1, setP1] = useState(false);
+  const instancedApi1 = useRef<RigidBodyApi>(null!);
+  const instancedApi2 = useRef<RigidBodyApi>(null!);
 
-  if (!p1) {
-    return <mesh position={position} onClick={() => setP1(true)} geometry={geometry}>
-      <meshNormalMaterial />
-    </mesh>;
-  }
+  useEffect(() => {
+    instancedApi1.current.setLinvel(new Vector3(-0.2, 0, 0));
+    instancedApi2.current.setLinvel(new Vector3(0.2, 0, 0));
+  }, []);
 
-  return <>
-    <group>
-      <mesh position={position}>
+  return <group position={props.position}>
+    <RigidBody ref={instancedApi1}>
+      <mesh>
         <Intersection>
-          <Brush a geometry={geometry} />
+          <Brush a geometry={props.geometry} />
           <Brush b position={cutOffset}>
-            <boxGeometry args={[(width + 0.1) / 2, height + 0.1, 1]} />
+            <boxGeometry args={cutArgs} />
           </Brush>
         </Intersection>
-        <meshStandardMaterial color={color} />
+        <meshStandardMaterial color={props.color} />
       </mesh>
-      <mesh position={position}>
+    </RigidBody>
+    <RigidBody ref={instancedApi2}>
+      <mesh>
         <Subtraction>
-          <Brush a geometry={geometry} />
+          <Brush a geometry={props.geometry} />
           <Brush b position={cutOffset}>
-            <boxGeometry args={[(width + 0.1) / 2, height + 0.1, 1]} />
+            <boxGeometry args={cutArgs} />
           </Brush>
         </Subtraction>
         <meshStandardMaterial color={"hotpink"} />
       </mesh>
-    </group>
-    {/*<mesh position={cutPosition}>*/}
-    {/*  <boxGeometry args={[(width + 0.1) / 2, height + 0.1, 1]} />*/}
-    {/*  <meshStandardMaterial color={color} />*/}
+    </RigidBody>
+    {/*<mesh position={cutOffset}>*/}
+    {/*  <boxGeometry args={cutArgs} />*/}
+    {/*  <meshStandardMaterial color={"yellow"} />*/}
     {/*</mesh>*/}
-  </>;
+  </group>;
+}
+
+function Character({ geometry, position, color, width, height }: CharProps2) {
+  const [clicked, setClicked] = useState(false);
+
+  return (
+    !clicked ? <mesh position={position} onClick={() => setClicked(true)} geometry={geometry}>
+        <meshNormalMaterial />
+      </mesh> :
+      <SplitCharacter position={position}
+                      geometry={geometry}
+                      width={width}
+                      height={height}
+                      color={color} />
+  );
 }
 
 const calculateTextGeometryOffset = () => {
@@ -139,7 +156,6 @@ export function Scene() {
   const offset = useMemo(calculateTextGeometryOffset, []);
 
   return <>
-    {/*<MyText2 text={"Hello"} wireframe position={[0, 0, 1]} />*/}
     {offset.map((c, i) =>
       <Character
         key={i}
@@ -149,13 +165,20 @@ export function Scene() {
         width={c.width}
         height={c.height} />)
     }
+
+    <RigidBody type={"fixed"} >
+      <Box args={[5, 5, 5]}>
+        <meshPhysicalMaterial color="lightblue" transmission={1} thickness={1} roughness={0} />
+      </Box>
+
+    </RigidBody>
     <MovementSystem />;
   </>;
 }
 
 export function ThreeApp() {
   return (
-    <Canvas camera={{ position: [5, 10, 5], zoom: 100 }} orthographic shadows>
+    <Canvas camera={{ position: [0, 0, 5], zoom: 100 }} orthographic shadows>
       <Lights />
       <Physics>
         <Scene />
