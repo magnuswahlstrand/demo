@@ -1,7 +1,7 @@
 import type { Vector3 } from "@react-three/drei";
 import { Canvas, mesh, useFrame } from "@react-three/fiber";
 import { Debug, Physics, RigidBody, RigidBodyApi } from "@react-three/rapier";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Plane, Vector3 as V3 } from "three";
 import { useDrag } from "@use-gesture/react";
 import { damp3 } from "maath/easing";
@@ -40,22 +40,42 @@ interface SceneProps {
 function MyPlane3({
                     position,
                     mouse,
-                    target = new V3(),
+                    target = new V3()
                   }: SceneProps) {
   const [selected, setSelected] = useState(false);
   const [pos, setPos] = useState([...position]);
   const ref = useRef<RigidBodyApi>(null!);
 
-  const bind = useDrag(({ down, movement: [mx, my], event }) => {
+  const someV = new V3();
+  const bind = useDrag(({ first, last, movement: [mx, my], event }) => {
+    if (first) {
+      ref.current.setEnabledTranslations(false, false, false);
+      console.log("start");
+    }
+    if (last) {
+      // ref.current.setEnabledTranslations(true, true, true);
+      console.log("stop");
+    }
     event.ray.intersectPlane(floorPlane, mouse);
   });
 
   useFrame((state, dt) => {
     damp3(target, mouse, 0.05, dt, 10);
-    ref.current.setNextKinematicTranslation(target);
+    someV.copy(target).sub(ref.current.translation());
+    console.log(someV.multiplyScalar(5));//.multiplyScalar(0.1));
+    ref.current.setLinvel(someV, true);
+
+    // ref.current.applyImpulse(someV, true);
+    // ref.current.setNextKinematicTranslation(target);
+    // ref.current.
+    // ref.current.setTranslation(target);
   });
 
-  return <RigidBody mass={1} ref={ref} type={"kinematicPosition"} position={position}>
+  return <RigidBody mass={1} ref={ref} type={"dynamic"} position={position}
+    // enabledTranslations={[false, false, false]}
+                    enabledRotations={[false, false, true]}
+                    angularDamping={2}
+  >
     <mesh rotation={[-Math.PI / 2, 0, 0]}
           {...bind()}
     >
@@ -68,14 +88,14 @@ function MyPlane3({
 
 function Scene() {
   return <>
-    <Physics>
+    <Physics gravity={[0, 0, 0]}>
       <Debug />
       <MyPlane />
       <MyPlane position={[1.5 * width, 0.2, 0]} />
       <MyPlane2 position={[0.75 * width, 0.5, 0]} />
-      <MyPlane3 position={[0.75 * width, 2.5, 0]}
-                mouse={new V3(0.75 * width, 2.5, 0)}
-                target={new V3(0.75 * width, 2.5, 0)}
+      <MyPlane3 position={[0.75 * width, 1.5, 0]}
+                mouse={new V3(0.75 * width, 1.5, 0)}
+                target={new V3(0.75 * width, 1.5, 0)}
       />
     </Physics>
 
@@ -83,7 +103,7 @@ function Scene() {
 }
 
 function App() {
-  return <Canvas camera={{ position: [0, 1, 5] }}>
+  return <Canvas camera={{ position: [0, 1, 3] }}>
     <Scene />
     {/*<OrbitControls />*/}
   </Canvas>;
