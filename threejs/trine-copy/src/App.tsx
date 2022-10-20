@@ -1,7 +1,7 @@
 import type { Vector3 } from "@react-three/drei";
 import { Canvas, mesh, useFrame } from "@react-three/fiber";
 import { Debug, Physics, RigidBody, RigidBodyApi } from "@react-three/rapier";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Plane, Vector3 as V3 } from "three";
 import { useDrag } from "@use-gesture/react";
 import { damp3 } from "maath/easing";
@@ -38,35 +38,23 @@ interface SceneProps {
   mouse: Vector3
 }
 
-const zero = new V3(0, 0, 0)
-
 function MyPlane3({
                     position,
                     mouse,
                     target = new V3()
                   }: SceneProps) {
-  const [selected, setSelected] = useState(false);
-  const [pos, setPos] = useState([...position]);
   const ref = useRef<RigidBodyApi>(null!);
 
   const someV = new V3();
   const bind = useDrag(({ first, last, event }) => {
+    event.stopPropagation();
     if (first) {
-      setSelected(true);
-      ref.current.setLinvel(zero);
-      ref.current.setAngvel(zero);
-      // ref.current.setEnabledRotations(false, false, false)
-      // ref.current.setEnabledRotations(false, false, false);
       console.log("start");
+      ref.current.raw().userData = { selected: true };
     }
     if (last) {
-      setSelected(false);
-      ref.current.resetForces()
-      ref.current.setLinvel(zero);
-      ref.current.setAngvel(zero);
-      // ref.current.setEnabledRotations(false, false, true)
-      // ref.current.setEnabledRotations(true, true, true);
       console.log("stop");
+      ref.current.raw().userData = { selected: false };
     }
     event.ray.intersectPlane(floorPlane, mouse);
   });
@@ -74,29 +62,15 @@ function MyPlane3({
   useFrame((state, dt) => {
     damp3(target, mouse, 0.05, dt, 10);
     someV.copy(target).sub(ref.current.translation());
-    // console.log("len",someV.length());
-    // console.log(someV.multiplyScalar(5));//.multiplyScalar(0.1));
-    // TODO: Use ref here instead?
-    if (selected) {
+    const userData = ref.current.raw().userData as { selected?: boolean };
+    if (userData && userData.selected) {
       ref.current.setLinvel(someV.multiplyScalar(5), true);
-      ref.current.setAngvel(new V3(0,0,1))
-
-    } else {
-      console.log(ref.current.linvel().length())
-      // ref.current.addForce(new V3(0, gravity, 0).multiplyScalar(dt), true);
+      ref.current.setAngvel(new V3(0, 0, 1));
     }
-
-
-    // ref.current.applyImpulse(someV, true);
-    // ref.current.setNextKinematicTranslation(target);
-    // ref.current.
-    // ref.current.setTranslation(target);
   });
 
   return <RigidBody mass={1} ref={ref} type={"dynamic"} position={position}
-    // enabledTranslations={[false, false, false]}
                     enabledRotations={[false, false, true]}
-                    // enabledRotations={[false, false, false]}
                     angularDamping={2}
   >
     <mesh rotation={[-Math.PI / 2, 0, 0]}
@@ -119,6 +93,10 @@ function Scene() {
       <MyPlane3 position={[0.75 * width, 1.5, 0]}
                 mouse={new V3(0.75 * width, 1.5, 0)}
                 target={new V3(0.75 * width, 1.5, 0)}
+      />
+      <MyPlane3 position={[0.75 * width, 2.5, 0]}
+                mouse={new V3(0.75 * width, 2.5, 0)}
+                target={new V3(0.75 * width, 2.5, 0)}
       />
     </Physics>
 
